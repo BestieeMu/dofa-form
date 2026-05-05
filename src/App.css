@@ -1,0 +1,31 @@
+:root { --blue:#123a59; --teal:#0f6b70; --light:#eaf4f8; --green:#7c9b36; --gray:#f6f7f8; --line:#c8d4dc; }
+* { box-sizing: border-box; }
+body, html, #root { margin: 0; min-height: 100%; font-family: Arial, Helvetica, sans-serif; background: #f2f5f7; color: #1f2933; }
+body { background: #f2f5f7; }
+.app-shell header { background: linear-gradient(120deg, var(--blue), var(--teal)); color: white; padding: 24px 32px; border-bottom: 8px solid var(--green); }
+.app-shell header h1 { margin: 0; font-size: 28px; letter-spacing: .5px; }
+.app-shell header p { margin: 6px 0 0; opacity: .95; }
+.app-shell main { max-width: 1100px; margin: 24px auto; padding: 0 16px 80px; }
+.card { background: white; border-radius: 8px; box-shadow: 0 8px 18px rgba(0,0,0,.07); padding: 22px; margin-bottom: 22px; border: 1px solid #dde5ea; }
+.intro { border-left: 6px solid var(--green); }
+h2 { color: var(--blue); font-size: 20px; margin: 0 0 14px; padding-bottom: 8px; border-bottom: 2px solid #d9e8ef; }
+h3 { color: var(--teal); font-size: 16px; margin: 18px 0 10px; }
+h4 { color: #35424d; font-size: 14px; margin: 14px 0 8px; }
+.pdf-list { margin: 6px 0 16px 20px; padding: 0; line-height: 1.5; }
+.package-list { list-style-type: square; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.checkboxes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; margin-top: 6px; align-items: start; }
+label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #35424d; }
+.checkboxes label { display: grid; grid-template-columns: 18px minmax(0, 1fr); align-items: start; column-gap: 8px; margin: 0; font-weight: 600; line-height: 1.35; }
+.checkboxes input[type="checkbox"] { width: 16px; height: 16px; margin: 1px 0 0; padding: 0; accent-color: var(--teal); }
+input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 11px; font-size: 14px; background: white; }
+textarea { min-height: 86px; resize: vertical; }
+.actions { position: sticky; bottom: 0; background: white; border-top: 1px solid #dce5ea; padding: 14px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; box-shadow: 0 -8px 20px rgba(0,0,0,.08); }
+button { border: 0; border-radius: 8px; padding: 12px 18px; font-weight: 700; cursor: pointer; color: white; background: var(--blue); }
+button:disabled { cursor: not-allowed; opacity: .65; }
+button.secondary { background: var(--teal); }
+button.light { background: #536270; }
+.small { font-size: 12px; color: #60717f; line-height: 1.45; }
+.required::after { content: ' *'; color: #b42318; }
+.notice { background: var(--light); padding: 12px; border-radius: 10px; border: 1px solid #cde1eb; font-size: 13px; }
+@media (max-width: 760px) { .grid, .checkboxes { grid-template-columns: 1fr; } .app-shell header { padding: 20px; } }
