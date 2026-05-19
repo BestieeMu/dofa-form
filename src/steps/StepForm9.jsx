@@ -1,13 +1,14 @@
 import { useForm } from '../FormContext.jsx';
+
 export default function StepForm9() {
   const { handleChange, getDeep } = useForm();
+
   return (<section className="card">
-    <div className="step-header"><div className="step-icon">⚖️</div><div><h2>Form 9 — Rights & Responsibilities Acknowledgement</h2><p className="step-desc">Review and acknowledge your rights</p></div></div>
+    <div className="step-header"><div className="step-icon">10</div><div><h2>Rights & Responsibilities Acknowledgement</h2><p className="step-desc">Final acknowledgement from participant or representative</p></div></div>
     <div className="notice">By signing, the participant or representative acknowledges that the Rights and Responsibilities have been received, read or explained, and understood.</div>
     <div className="grid">
       <div><label>Participant / Representative Signature</label><input name="rights.signature" value={getDeep('rights.signature') || ''} onChange={handleChange} /></div>
       <div><label>Date</label><input type="date" name="rights.date" value={getDeep('rights.date') || ''} onChange={handleChange} /></div>
-      <div><label>Staff Witness</label><input name="rights.staffWitness" value={getDeep('rights.staffWitness') || ''} onChange={handleChange} /></div>
       <div><label>Printed Name</label><input name="rights.printedName" value={getDeep('rights.printedName') || ''} onChange={handleChange} /></div>
       <div><label>Relationship</label><input name="rights.relationship" value={getDeep('rights.relationship') || ''} onChange={handleChange} /></div>
     </div>

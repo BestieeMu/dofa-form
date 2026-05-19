@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import './App.css';
 import { STEPS } from './steps.js';
 import { FormContext, setDeep, getDeep } from './FormContext.jsx';
@@ -7,16 +7,12 @@ import StepContact from './steps/StepContact.jsx';
 import StepChecklist from './steps/StepChecklist.jsx';
 import StepForm1 from './steps/StepForm1.jsx';
 import StepForm2 from './steps/StepForm2.jsx';
-import StepForm3 from './steps/StepForm3.jsx';
-import StepForm4 from './steps/StepForm4.jsx';
-import StepForm5 from './steps/StepForm5.jsx';
 import StepForm6 from './steps/StepForm6.jsx';
 import StepForm7 from './steps/StepForm7.jsx';
 import StepForm8 from './steps/StepForm8.jsx';
 import StepForm9 from './steps/StepForm9.jsx';
-import StepSignatures from './steps/StepSignatures.jsx';
 
-const STEP_COMPONENTS = [StepWelcome,StepContact,StepChecklist,StepForm1,StepForm2,StepForm3,StepForm4,StepForm5,StepForm6,StepForm7,StepForm8,StepForm9,StepSignatures];
+const STEP_COMPONENTS = [StepWelcome, StepContact, StepChecklist, StepForm1, StepForm2, StepForm8, StepForm9, StepForm6, StepForm7];
 
 function App() {
   const [data, setData] = useState({});
@@ -28,16 +24,22 @@ function App() {
   const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'success', pdfUrl: null });
   const mainRef = useRef(null);
 
-  const skipForm5 = getDeep(data, 'risk.form5Required') === 'No — skip to Form 6';
-
-  const visibleSteps = STEPS.map((s, i) => ({ ...s, index: i, skipped: s.conditional && skipForm5 }));
+  const visibleSteps = STEPS.map((s, i) => ({ ...s, index: i, skipped: false }));
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setData(prev => {
       const next = JSON.parse(JSON.stringify(prev || {}));
       setDeep(next, name, value);
-      if (name === 'risk.form5Required' && value === 'No — skip to Form 6') delete next.clinical;
+      return next;
+    });
+    setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
+  }, []);
+
+  const handleBooleanChange = useCallback((name, checked) => {
+    setData(prev => {
+      const next = JSON.parse(JSON.stringify(prev || {}));
+      setDeep(next, name, checked);
       return next;
     });
     setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
@@ -75,7 +77,6 @@ function App() {
 
   const goToStep = useCallback((targetStep) => {
     if (targetStep < 0 || targetStep >= STEPS.length) return;
-    if (visibleSteps[targetStep].skipped) return;
     setAnimClass('step-content slide-out');
     setTimeout(() => {
       setCurrentStep(targetStep);
@@ -83,26 +84,40 @@ function App() {
       setAnimClass('step-content');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 200);
-  }, [visibleSteps]);
+  }, []);
 
   const nextStep = useCallback(() => {
     if (!validateStep()) return;
-    let next = currentStep + 1;
-    while (next < STEPS.length && visibleSteps[next].skipped) next++;
-    if (next < STEPS.length) goToStep(next);
-  }, [currentStep, validateStep, goToStep, visibleSteps]);
+    if (currentStep + 1 < STEPS.length) goToStep(currentStep + 1);
+  }, [currentStep, validateStep, goToStep]);
 
   const prevStep = useCallback(() => {
-    let prev = currentStep - 1;
-    while (prev >= 0 && visibleSteps[prev].skipped) prev--;
-    if (prev >= 0) goToStep(prev);
-  }, [currentStep, goToStep, visibleSteps]);
+    if (currentStep - 1 >= 0) goToStep(currentStep - 1);
+  }, [currentStep, goToStep]);
 
-  const saveDraft = () => { localStorage.setItem('dofaIntakeDraft', JSON.stringify({ data, currentStep })); setToastMsg('Draft saved!'); setTimeout(() => setToastMsg(''), 2000); };
+  const saveDraft = () => {
+    localStorage.setItem('dofaIntakeDraft', JSON.stringify({ data, currentStep }));
+    setToastMsg('Draft saved!');
+    setTimeout(() => setToastMsg(''), 2000);
+  };
+
   const loadDraft = () => {
     const raw = localStorage.getItem('dofaIntakeDraft');
-    if (!raw) { setToastMsg('No saved draft found'); setTimeout(() => setToastMsg(''), 2500); return; }
-    try { const parsed = JSON.parse(raw); setData(parsed.data || parsed); if (parsed.currentStep) setCurrentStep(parsed.currentStep); setToastMsg('Draft loaded!'); setTimeout(() => setToastMsg(''), 2000); } catch { setToastMsg('Could not load draft'); setTimeout(() => setToastMsg(''), 2500); }
+    if (!raw) {
+      setToastMsg('No saved draft found');
+      setTimeout(() => setToastMsg(''), 2500);
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw);
+      setData(parsed.data || parsed);
+      if (parsed.currentStep) setCurrentStep(parsed.currentStep);
+      setToastMsg('Draft loaded!');
+      setTimeout(() => setToastMsg(''), 2000);
+    } catch {
+      setToastMsg('Could not load draft');
+      setTimeout(() => setToastMsg(''), 2500);
+    }
   };
 
   const submitToGoogleSheets = async () => {
@@ -110,25 +125,25 @@ function App() {
     try {
       const response = await fetch('/api/submit/google', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok || result.ok === false) { 
+      if (!response.ok || result.ok === false) {
         setModal({ isOpen: true, title: 'Submission Failed', message: result.error || 'Unable to submit to Google Sheets.', type: 'error' });
-        return; 
+        return;
       }
       setModal({ isOpen: true, title: 'Success!', message: 'Submitted successfully.', type: 'success', pdfUrl: result.pdfUrl });
-    } catch { 
+    } catch {
       setModal({ isOpen: true, title: 'Error', message: 'Unable to submit right now. Please check the API server and Apps Script URL.', type: 'error' });
+    } finally {
+      setIsSubmitting(false);
     }
-    finally { setIsSubmitting(false); }
   };
 
-  const totalVisible = visibleSteps.filter(s => !s.skipped).length;
-  const currentVisible = visibleSteps.filter((s, i) => i <= currentStep && !s.skipped).length;
+  const totalVisible = visibleSteps.length;
+  const currentVisible = currentStep + 1;
   const progressPct = (currentVisible / totalVisible) * 100;
   const isLastStep = currentStep === STEPS.length - 1;
   const StepComponent = STEP_COMPONENTS[currentStep];
   const stepDef = STEPS[currentStep];
-
-  const ctxValue = { data, handleChange, handleCheckboxChange, checkboxChecked, getDeep: (path) => getDeep(data, path), errors };
+  const ctxValue = { data, handleChange, handleBooleanChange, handleCheckboxChange, checkboxChecked, getDeep: (path) => getDeep(data, path), errors };
 
   return (
     <FormContext.Provider value={ctxValue}>
@@ -139,7 +154,7 @@ function App() {
             <div className="header-text">
               <h1>DOFA PATHWAYS</h1>
               <div className="header-tagline">Developing Opportunities For All</div>
-              <div className="header-subtitle">Residential Services — New Admission Intake Form</div>
+              <div className="header-subtitle">Residential Services - New Admission Intake Form</div>
             </div>
             <div className="header-decor"><span></span><span></span></div>
           </div>
@@ -148,19 +163,19 @@ function App() {
         <div className="progress-wrapper">
           <div className="progress-inner">
             <div className="progress-meta">
-              <span className="progress-step-label">{stepDef.icon} {stepDef.title}</span>
+              <span className="progress-step-label">{stepDef.title}</span>
               <span className="progress-step-count">Step {currentVisible} of {totalVisible}</span>
             </div>
             <div className="progress-track"><div className="progress-fill" style={{ width: `${progressPct}%` }}></div></div>
             <div className="progress-dots">
               {visibleSteps.map((s, i) => (
                 <div className="progress-dot-wrapper" key={s.id}>
-                  {i > 0 && <div className={`progress-connector${i <= currentStep && !s.skipped ? ' filled' : ''}`}></div>}
+                  {i > 0 && <div className={`progress-connector${i <= currentStep ? ' filled' : ''}`}></div>}
                   <div
-                    className={`progress-dot${i === currentStep ? ' active' : i < currentStep && !s.skipped ? ' completed' : ''}${s.skipped ? ' skipped' : ''}`}
+                    className={`progress-dot${i === currentStep ? ' active' : i < currentStep ? ' completed' : ''}`}
                     onClick={() => { if (i < currentStep) goToStep(i); }}
                     title={s.title}
-                  >{i < currentStep && !s.skipped ? '✓' : i + 1}</div>
+                  >{i < currentStep ? 'OK' : i + 1}</div>
                 </div>
               ))}
             </div>
@@ -182,12 +197,12 @@ function App() {
         {modal.isOpen && (
           <div className="modal-overlay">
             <div className="modal-content">
-              <div className={`modal-icon ${modal.type}`}>{modal.type === 'success' ? '✓' : '⚠'}</div>
+              <div className={`modal-icon ${modal.type}`}>{modal.type === 'success' ? 'OK' : '!'}</div>
               <h3 className="modal-title">{modal.title}</h3>
               <p className="modal-message">{modal.message}</p>
               {modal.pdfUrl && (
                 <div className="modal-pdf">
-                  <a href={modal.pdfUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">📄 View Saved PDF</a>
+                  <a href={modal.pdfUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">View Saved PDF</a>
                 </div>
               )}
               <div className="modal-actions">
@@ -200,16 +215,16 @@ function App() {
         <div className="nav-footer">
           <div className="nav-inner">
             <div className="nav-left">
-              {currentStep > 0 && <button type="button" className="btn-back" onClick={prevStep}>← Back</button>}
+              {currentStep > 0 && <button type="button" className="btn-back" onClick={prevStep}>Back</button>}
             </div>
             <div className="nav-center">
-              <button type="button" className="btn-draft" onClick={saveDraft}>💾 Save</button>
-              <button type="button" className="btn-draft" onClick={loadDraft}>📂 Load</button>
+              <button type="button" className="btn-draft" onClick={saveDraft}>Save</button>
+              <button type="button" className="btn-draft" onClick={loadDraft}>Load</button>
             </div>
             <div className="nav-right">
               {isLastStep
-                ? <button type="button" className="btn-submit" onClick={submitToGoogleSheets} disabled={isSubmitting}>{isSubmitting ? 'Submitting…' : '✓ Submit Form'}</button>
-                : <button type="button" className="btn-primary" onClick={nextStep}>Next →</button>
+                ? <button type="button" className="btn-submit" onClick={submitToGoogleSheets} disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Submit Form'}</button>
+                : <button type="button" className="btn-primary" onClick={nextStep}>Next</button>
               }
             </div>
           </div>

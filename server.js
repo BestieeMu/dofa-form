@@ -28,15 +28,11 @@ const sections = [
   { key: 'checklist', title: 'New Admission Documentation Checklist' },
   { key: 'participant', title: 'Form 1 — Participant Information & Demographics' },
   { key: 'emergency', title: 'Form 2 — Emergency Contact & Guardian Information' },
-  { key: 'referral', title: 'Form 3 — Referral, Program Interest & Goals' },
-  { key: 'risk', title: 'Form 4 — Risk Screening' },
   { key: 'clinical', title: 'Form 5 — Clinical / High-Support Needs Assessment' },
   { key: 'placement', title: 'Form 6 — Residential Placement Agreement' },
   { key: 'consent', title: 'Form 7 — Consent for Services & HIPAA Acknowledgement' },
   { key: 'roi', title: 'Form 8 — Authorization for Release of Protected Health Information' },
   { key: 'rights', title: 'Form 9 — Participant Rights & Responsibilities Acknowledgement' },
-  { key: 'signature', title: 'Signature Page — Participant, Guardian & Responsible Party' },
-  { key: 'staff', title: 'Form 10 — Staff Intake Review & Eligibility Determination' }
 ];
 
 function valueText(value) {

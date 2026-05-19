@@ -1,0 +1,676 @@
+
+============================== PAGE 1 ==============================
+DOFA PATHWAYS CORPORATION 
+Developing 
+Opportunities For All
+10005 Old Columbia Rd, Suite L
+-
+261 | Columbia, MD 21046 | 301
+-
+356
+-
+8845
+DOFA Pathways Corporation | Residential Services 
+New Admission Intake Package | Confidential | Page 
+1
+NEW ADMISSION
+INTAKE PACKAGE
+Participant Name
+{{cover.participantName}}
+Date of Admission
+{{cover.dateOfAdmission}}
+Assigned Residence
+{{cover.assignedResidence}}
+Assigned 
+House 
+Manager
+{{cover.assignedCaseManager}}
+Confidential 
+For Authorized Use Only
+AGENCY CONTACT INFORMATION
+Office Address
+10005 Old Columbia Rd, Suite L
+-
+261
+Columbia, MD 21046
+Office Hours
+(301) 356
+-
+8845
+Mon
+Fri, 9:00am
+5:00pm
+Director of 
+Programs
+akamran@dofapathways.org
+(240) 375
+-
+6996
+Program Service Administrator
+mrex@dofapathways.org
+(667) 409
+-
+1028
+Available 24 Hours a Day, 7 Days a Week
+Delegating Nurse
+Halimat B.
+hbakare@dofapathways.org
+(
+773) 690
+-
+7029
+Emergency & Crisis Lines
+Maryland Crisis Hotline (24/7): Dial 988
+Emergency Services: Dial 911
+
+============================== PAGE 2 ==============================
+DOFA PATHWAYS CORPORATION 
+Developing 
+Opportunities For All
+10005 Old Columbia Rd, Suite L
+-
+261 | Columbia, MD 21046 | 301
+-
+356
+-
+8845
+DOFA Pathways Corporation | Residential Services 
+New Admission Intake Package | Confidential | Page 
+2
+Welcome to Our Individuals and 
+Their Families,
+Thank you for choosing DOFA Pathways. 
+We know that entrusting the care of your loved one to 
+someone else is one of the most courageous decisions a family 
+can make. It requires faith, vulnerability, and hope and we honor that deeply.
+DOFA Pathways were not created from theory or distance. It was born from experience from the sacred journey of 
+birt
+hing and caring for my own son with many abilities, and learning firsthand what it means to advocate, to fight, to 
+love, and to believe in someone's limitless potential. Being chosen as his mother ignited the vision that became DOFA 
+Pathways. Combined with
+my many years as a Direct Support Professional, Registered Nurse, and Case Manager, this 
+journey shaped
+Our promise:
+Your loved one will be met with
+dignity, compassion, respect, and unwavering belief 
+every single day.
+Their choices will guide us.
+Their preferences will shape us.
+Their quality of life will inspire us
+.
+Our 
+name
+reflects our purpose:
+Developing Opportunities For All
+This is not just a name. It is our calling
+We are committed to being present for you 24 hours a day, seven days a week
+whenever you need our approved 
+services. You are not just receiving a provider; you are joining a community built on empathy, advocacy, and hope.
+This package was prepared to help you understand your services and what you can expect from us. Please take t
+ime to 
+review and sign. If you have any questions, you are always welcome to contact our team or reach out to me personally.
+Thank you for allowing us to walk this journey with you.
+It is an honor we do not take lightly.
+Atinuke Fadipe, MSN, RN, CM/DN
+Founder & CEO,
+DOFA Pathways Corporation
+
+============================== PAGE 3 ==============================
+DOFA PATHWAYS CORPORATION 
+Developing 
+Opportunities For All
+10005 Old Columbia Rd, Suite L
+-
+261 | Columbia, MD 21046 | 301
+-
+356
+-
+8845
+DOFA Pathways Corporation | Residential Services 
+New Admission Intake Package | Confidential | Page 
+3
+NEW ADMISSION 
+REQUIRED DOCUMENTATION CHECKLIST
+A. Identification
+{{checklist.identification.social_security_card}}
+Social Security Card
+{{checklist.identification.state_id}}
+State
+-
+Issued Photo ID
+{{checklist.identification.insurance_medicaid_medicare_cards}}
+Insurance / Medicaid / Medicare Cards
+B. Person
+-
+Centered Plan (PCP)
+{{checklist.personCenteredPlan.current_approved_pcp}}
+Current Approved PCP
+C. Clinical / Functional Information
+{{checklist.clinicalFunctionalInformation.full_current_nursing_assessment_if_applicable}}
+Current 
+Nursing Assessment (if applicable)
+{{checklist.clinicalFunctionalInformation.health_risk_screening_tool_hrst}}
+Health Risk Screening Tool 
+(HRST)
+{{checklist.clinicalFunctionalInformation.medication_list}}
+Medication List
+{{checklist.clinicalFunctionalInformation.current_physician_orders}} 
+Current Physician Orders
+{{checklist.clinicalFunctionalInformation.behavioral_support_plan_if_applicable}} 
+Behavioral Support Plan 
+(if applicable)
+{{checklist.clinicalFunctionalInformation.therapy_plans_ot_pt_speech_etc}} 
+Recent Medical 
+Appointments/
+Therapy Plans (OT, PT, Speec
+h, etc.)
+{{checklist.clinicalFunctionalInformation.recent_medical_summaries_or_discharge_summaries}} 
+Recent 
+Medical Summaries or Discharge Summaries
+D. Health & Medical Records
+{{checklist.healthMedicalRecords.complete_medical_history}} 
+Complete Medi
+cal History
+{{checklist.healthMedicalRecords.allergies}}
+Allergies
+{{checklist.healthMedicalRecords.immunization_record}} 
+Immunization Record
+E. Legal Documents (If Applicable)
+{{checklist.legalDocuments.guardianship_letters_poa_documentation}} 
+Guardianship Letters / POA 
+Documentation
+{{checklist.legalDocuments.court_orders_if_any}} 
+Court Orders (if any)
+{{checklist.legalDocuments.authorized_representative_forms}} 
+Authorized Representative Forms
+
+============================== PAGE 4 ==============================
+DOFA PATHWAYS CORPORATION 
+Developing 
+Opportunities For All
+10005 Old Columbia Rd, Suite L
+-
+261 | Columbia, MD 21046 | 301
+-
+356
+-
+8845
+DOFA Pathways Corporation | Residential Services 
+New Admission Intake Package | Confidential | Page 
+4
+FORM 1
+Participant Information & 
+Demographics
+Please complete all required fields. This information is used to establish participant record.
+Personal Information
+Full Legal Name * (First
+Middle
+Last)
+Preferred Name / Nickname
+{{participant.fullLegalName}}
+{{participant.preferredName}}
+Date of Birth * (Month
+Day
+Year)
+Full 
+Social Security
+*
+{{participant.dateOfBirth}}
+{{participant.ssnFull}}
+Gender Identity
+Primary Language
+*
+{{participant.genderIdentity}}
+{{participant.primaryLanguage}}
+Medicaid ID #
+*
+Primary Insurance / Payer
+Policy / Member ID
+{{participant.medicaidId}}
+{{participant.primaryInsurance}}
+{{participant.policyMemberId}}
+Code Status
+{{clinical.codeStatus.full_code}}
+Full Code
+{{clinical.codeStatus.dnr_on_file}}
+DNR 
+on file
+{{clinical.codeStatus.dni}}
+DNI
+Contact Information
+Current Address (Street, City, State, ZIP) *
+{{participant.currentAddress}}
+Primary Phone *
+Alternate Phone
+Email Address
+{{participant.primaryPhone}}
+{{participant.alternatePhone}}
+{{participant.email}}
+Race / Ethnicity (Optional)
+{{participant.raceEthnicity.american
+_indian_alaska_native}}
+American 
+Indian / Alaska Native
+{{participant.raceEth
+nicity.asian}} 
+Asian
+{{participant.raceEthnicity.black
+_african_american}} 
+Black 
+/ 
+African American
+{{participant.raceEthnicity.
+hispanic_latino}}
+Hispanic 
+/ Latino
+{{participant.raceEthnicity.nati
+ve_hawaiian_pacific_islander}
+} 
+Native Hawaiian / Pacific 
+Islander
+{{participant.raceEthnicity.nati
+ve_hawaiian_pacific_islander}
+} 
+Wh
+ite
+{{participant.raceEthnici
+ty.two_or_more_races}} 
+Two or more races
+{{participant.raceEthnicity.
+prefer_not_to_say}}
+Prefer 
+not to say
+Housing & Background
+Current Residential Status
+{{participant.currentHousingStatus}}
+
+============================== PAGE 5 ==============================
+DOFA PATHWAYS CORPORATION 
+Developing 
+Opportunities For All
+10005 Old Columbia Rd, Suite L
+-
+261 | Columbia, MD 21046 | 301
+-
+356
+-
+8845
+DOFA Pathways Corporation | Residential Services 
+New Admission Intake Package | Confidential | Page 
+5
+FORM 2
+Emergency 
+Contact & Guardian Information
+Emergency Contact
+Emergency Contact Full Name *
+Relationship to Participant *
+{{emergency.contactFullName}}
+{{emergency.relationship}}
+Primary Phone *
+Alternate Phone
+{{emergency.primaryPhone}}
+{{emergency.alternatePhone}}
+Address (if different from participant)
+{{emergency.address}}
+Legal Guardian / Authorized Representative
+Does the participant have a legal guardian or authorized representative?
+{{emergency.hasGuardian}}
+Yes
+{{emergency.hasNoGuardian}} 
+No
+If YES, complete the following:
+Guardian / Representative Full Name
+Relationship to Participant
+{{emergency.guardianFullName}}
+{{emergency.guardianRelationship}}
+Primary Phone
+Email Address
+{{emergency.guardianPhone}}
+{{emergency.guardianEmail}}
+Mailing Address
+{{emergency.guardianMailingAddress}}
+Legal Authority / Scope of Authority to Act on Behalf of Participant
+{{emergency.legalAuthority}}
+Documentation on File
+{{emergency.documentatio
+n.power_of_attorney_on_fil
+e}}
+Power of Attorney on file
+{{emergency.documentatio
+n.guardianship_order_on_fil
+e}}
+Guardianship Order on 
+file
+{{emergency.documentatio
+n.healthcare_proxy_on_fil
+e}}
+Healthcare Proxy on file
+{{emerg
+ency.documentation.
+none_participant_self_direct
+s}}
+None 
+participant self
+-
+directs
+
+============================== PAGE 6 ==============================
+DOFA PATHWAYS CORPORATION 
+Developing 
+Opportunities For All
+10005 Old Columbia Rd, Suite L
+-
+261 | Columbia, MD 21046 | 301
+-
+356
+-
+8845
+DOFA Pathways Corporation | Residential Services 
+New Admission Intake Package | Confidential | Page 
+6
+FORM 
+3
+Authorization for Release of Protected Health Information (ROI)
+Participant Full Name *
+Date of Birth *
+{{roi.participantFullName}}
+{{roi.dateOfBirth}}
+Disclose Information TO / FROM
+Name / Organization *
+Title / Position
+{{roi.nameOrganization}}
+{{roi.titlePosition}}
+Phone Number
+Fax Number
+Address
+{{roi.phoneNumber}}
+{{roi.faxNumber}}
+{{roi.address}}
+Type of Information to Be Released
+{{roi.informationTypes.disc
+harge_summary}}
+Discharge Summary
+{{roi.informationTypes.history_
+and_physical_exam}}
+History 
+and Physical Exam
+{{roi.informationTypes.con
+sultation_reports}}
+Consultation Reports
+{{roi.informationTypes.rep
+orts_of_operatio
+n}}
+Reports 
+of Operation
+{{roi.informationTypes.me
+dication_records}}
+Medication Records
+{{roi.informationTypes.ima
+ging_lab_reports}}
+Imaging 
+/ Lab Reports
+{{roi.informationTypes.
+nursing_notes}}
+Nursing Notes
+{{roi.informationTypes.psychologic
+a
+l_psychiatric_records}}
+Psychological / Psychiatric Records
+{{roi.informationTypes.isp_support_plan}}
+ISP / 
+Support Plan
+{{roi.informationTypes.other}}
+Other
+Sensitive Information Releases (Requires Specific Authorization)
+Information Type
+Authorize
+Do NOT Release
+HIV / AIDS Treatment 
+Information
+{{roi.hivAidsTreatment}}
+{{roi.hivAidsTreatmentNo}}
+Mental Health Records
+{{roi.mentalHealthRecords}}
+{{roi.mentalHealthRecordsNo}}
+Substance / Alcohol Abuse 
+Treatment
+{{roi.substanceAlcoholTreatment}}
+{{roi.substanceAlcoholTreatmentNo}}
+Records from Another 
+Provider
+{{roi.recordsFromAnotherProvider}}
+{{roi.recordsFromAnotherProviderNo}}
+Purpose of Disclosure
+{{roi.purposeOfDi
+sclosure.at_my_r
+equest}}
+At my 
+request
+{{roi.purposeOfDiscl
+osure.healthcare_tr
+eatment}}
+Healthcare / 
+Treatment
+{{roi.purposeOfDisc
+losure.payment_ins
+urance}}
+Payment / 
+Insurance
+{{roi.purposeOfDisclo
+sure.coordination_of_
+services}} 
+Coordination of 
+Services
+{{roi.purposeOf
+Disclosure.empl
+oyment}}
+Employment
+{{roi.purpose
+OfDisclosure.
+other}} 
+Other
+Authorization Effective Date
+Authorization Expiration Date
+{{roi.effectiveDate}}
+{{roi.expirationDate}}
+
+============================== PAGE 7 ==============================
+DOFA PATHWAYS CORPORATION 
+Developing 
+Opportunities For All
+10005 Old Columbia Rd, Suite L
+-
+261 | Columbia, MD 21046 | 301
+-
+356
+-
+8845
+DOFA Pathways Corporation | Residential Services 
+New Admission Intake Package | Confidential | Page 
+7
+This authorization is voluntary. Treatment, payment,
+enrollment, or eligibility for benefits cannot be conditioned on signing this 
+authorization unless allowed by law. I may revoke this authorization in writing at any time, except to the extent disclosures
+have 
+already been made. Once disclosed, information
+may be subject to re
+-
+disclosure. Maryland law may provide additional protections.
+Participant / Authorized Representative 
+Signature *
+Date *
+Staff Signature
+{{roi.signature}}
+{{roi.signatureDate}}
+{{roi.staffSignature}}
+{{roi.printedName}}
+{{roi.relationship}}
+Printed Name
+Relationship (if rep)
+
+============================== PAGE 8 ==============================
+DOFA PATHWAYS CORPORATION 
+Developing 
+Opportunities For All
+10005 Old Columbia Rd, Suite L
+-
+261 | Columbia, MD 21046 | 301
+-
+356
+-
+8845
+DOFA Pathways Corporation | Residential Services 
+New Admission Intake Package | Confidential | Page 
+8
+Your Rights as a DOFA Pathways Participant
+You have the right to:
+Be treated with dignity, respect, and cultural sensitivity at all times.
+Receive services without 
+discrimination based on race, color, religion, national origin, sex, age, disability, or 
+sexual orientation.
+Privacy and confidentiality of your personal and health information.
+Participate in the development, review, and revision of your Individuali
+zed Service Plan (ISP).
+Refuse any service or treatment and be informed of the consequences.
+File a grievance or complaint without fear of retaliation.
+Access your records and request corrections.
+Have visitors and maintain personal 
+relationships of your choice.
+Manage your own finances unless a guardian or representative payee has been appointed.
+Live in a safe, clean, and accessible home environment.
+Communicate privately with family, friends, advocates, and outside parties
+.
+Request a change in your case manager or service provider when feasible.
+Your Responsibilities as a Resident
+You are responsible for:
+Treating staff, housemates, and visitors with courtesy and respect.
+Informing staff of any changes in your 
+health, medications, or personal situation.
+Following the house rules and schedule as outlined by DOFA Pathways.
+Participating in your service plan reviews and ISP meetings.
+Notify
+staff before leaving the residence as required by your support plan.
+Caring for your personal belongings and shared common areas.
+Refraining from bringing prohibited substances or items into the residence.
+Providing accurate information during 
+the intake and ongoing services.
+Grievance Procedure
+If you have a concern or complaint, please:
+1
+Speak with your assigned Program Coordinator.
+2
+If unresolved, submit a written grievance to the Program Services Administrator.
+3
+If still unresolved, 
+contact the Executive Director and the Director of Programs.
+4
+Contact the Maryland DDA if still unresolved after the above steps.
+By signing below, I acknowledge that I have received, read (or had read to me), and understand my Rights and 
+Responsibilities as a DOFA Pathways participant.
+Participant / Authorized Representative Signature *
+Date *
+Relationship (if rep)
+{{rights.signature}}
+{{rights.date}}
+{{rights.relationship}}
+{{rights.printedName}}
+Printed Name
+
+============================== PAGE 9 ==============================
+DOFA PATHWAYS CORPORATION 
+Developing 
+Opportunities For All
+10005 Old Columbia Rd, Suite L
+-
+261 | Columbia, MD 21046 | 301
+-
+356
+-
+8845
+DOFA Pathways Corporation | Residential Services 
+New Admission Intake Package | Confidential | Page 
+9
+FORM 
+4
+Residential 
+Placement Agreement and Consent for Services (HIPAA)
+This agreement is entered into between DOFA Pathways ("the Provider") and the participant named below ("Resident") and/or 
+their authorized representative, for the provision of residential services.
+Participant Full Name *
+*
+{{placement
+.participantName}}
+Programs of Interest
+{{placement
+.gro
+up_ho
+me}}
+Group Home / 
+Residential 
+{{placement
+.supported_li
+ving}}
+Supported Living
+{{placement.community_development_
+service}} 
+Community Development 
+Services (CDS)
+{{placement.day_habilita
+tion}}
+Day Habilitation
+{{placement.v}} 
+Employment / 
+Vocational Support
+{{placement.behavioral_support}}
+Behavioral Support Services
+{{placement.family_caregiver}}
+Family / Caregiver Support
+{{placement.respite}}
+Respite Services
+Placement Details
+Placement Start Date *
+Residence / Home Address/Unit.
+{{placement.placementStartDate}}
+SIGNATURE PAGE 
+Participant, Guardian & 
+Responsible Party
+All applicable parties must sign below to acknowledge receipt of the intake package, consent to services, and agreement with 
+the terms outlined in each form. Signatures confirm that each section has been reviewed, explained, and understo
+od.
+By signing below, I consent to the following:
+Receipt 
+of services
+provided by DOFA Pathways Corporation
+Use and disclosure of protected health information (PHI) for treatment, payment, and healthcare operations as 
+described in the Notice of 
+Privacy Practices
+Contact by DOFA Pathways for appointment reminders, service updates, and care coordination
+Emergency treatment authorization in the event I am unable to consent
+I have received and reviewed the DOFA Pathways Notice of Privacy Pract
+ices.
+PARTICIPANT SIGNATURE
+Full Name (Print)
+{{consent.printedName}}
+Signature
+Date
+{{consent.participantSignature}}
+{{consent.signatureDate}}
+Address
+: 
+{{consent.ParticipantAdress}}
+Phone Number
+: 
+{{consent.ParticipantNum}}
+STAFF WITNESS / 
+PROGRAM ADMINISTRATOR.
+Staff Full Name (Print)
+Title
+{{consent.staffWitnessName}}
+{{consent.staffWitnessTitle}}
+Staff Signature
+: 
+{{consent.staffWitnessSignature}}
+Date
+: 
+{{consent.staffWitnessDate}}
+{{placement.residenceHomeAddress}}

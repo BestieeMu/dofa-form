@@ -559,6 +559,18 @@ input.field-error, select.field-error, textarea.field-error {
   border-radius: 4px;
 }
 
+.checkboxes.single-check {
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  margin-bottom: 14px;
+}
+
+.choice-row {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: #fbfdfe;
+}
+
 /* --- Required field asterisk --- */
 .required::after {
   content: ' *';

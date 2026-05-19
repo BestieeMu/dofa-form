@@ -11,241 +11,84 @@ const FIELD_SCHEMA = [
     text('cover.participantName', 'Participant Name'),
     dateField('cover.dateOfAdmission', 'Date of Admission'),
     text('cover.assignedResidence', 'Assigned Residence'),
-    text('cover.assignedCaseManager', 'Assigned Case Manager'),
+    text('cover.assignedCaseManager', 'Assigned House Manager'),
   ]),
   section('New Admission Documentation Checklist', [
-    checks('checklist.identification', '1. Required Documents & Information - A. Identification', [
-      'Social Security card',
-      'State ID',
-      'Insurance / Medicaid / Medicare cards',
-    ]),
-    checks('checklist.personCenteredPlan', '1. Required Documents & Information - B. Person-Centered Plan (PCP)', [
-      'Current approved PCP',
-      'Any recent PCP addendums or revisions',
-      'Goals, outcomes, and support needs relevant to residential services',
-    ]),
-    checks('checklist.clinicalFunctionalInformation', '1. Required Documents & Information - C. Clinical / Functional Information', [
-      'Full Current Nursing Assessment (if applicable)',
+    checks('checklist.identification', 'Identification', ['Social Security Card', 'State-Issued Photo ID', 'Insurance / Medicaid / Medicare Cards']),
+    checks('checklist.personCenteredPlan', 'Person-Centered Plan', ['Current Approved PCP']),
+    checks('checklist.clinicalFunctionalInformation', 'Clinical / Functional Information', [
+      'Current Nursing Assessment (if applicable)',
       'Health Risk Screening Tool (HRST)',
-      'Medication list',
-      'MARs (Medication Administration Records) for last 3–6 months',
-      'Current physician orders',
-      'Behavioral support plan (if applicable)',
-      'Therapy plans (OT, PT, Speech, etc.)',
-      'Recent medical summaries or discharge summaries',
+      'Medication List',
+      'Current Physician Orders',
+      'Behavioral Support Plan (if applicable)',
+      'Recent Medical Appointments / Therapy Plans (OT, PT, Speech, etc.)',
+      'Recent Medical Summaries or Discharge Summaries',
     ]),
-    checks('checklist.healthMedicalRecords', '2. Health & Medical Records', [
-      'Complete medical history',
-      'Allergies',
-      'Immunization record',
-      'Last annual physical & dental exam',
-    ]),
-    checks('checklist.legalDocuments', '3. Legal Documents (If Applicable)', [
-      'Guardianship letters / POA documentation',
-      'Court orders (if any)',
-      'Authorized representative forms',
-    ]),
-    checks('checklist.residentialDailySupportDetails', '4. Residential / Daily Support Details', [
-      'Staffing needs (1:1 hours, overnight support, etc.)',
-      'Dietary needs and meal plans',
-      'Transportation needs',
-      'List of assistive devices: wheelchair, gait belt, communication device, etc.',
-    ]),
-    checks('checklist.personalBelongingsTransitionPlanning', '5. Personal Belongings & Transition Planning', [
-      'Inventory list of personal property',
-      'Transfer of clothing, equipment, personal items',
-      'Handover of durable medical equipment',
-      'Date of move agreed by all parties',
-      'Orientation meeting between individual, new provider, CCS, and (if appropriate) family/guardian',
-    ]),
+    checks('checklist.healthMedicalRecords', 'Health & Medical Records', ['Complete Medical History', 'Allergies', 'Immunization Record']),
+    checks('checklist.legalDocuments', 'Legal Documents (If Applicable)', ['Guardianship Letters / POA Documentation', 'Court Orders (if any)', 'Authorized Representative Forms']),
   ]),
-  section('Form 1 - Participant Information & Demographics', [
+  section('Participant Information & Demographics', [
     text('participant.fullLegalName', 'Full Legal Name'),
     text('participant.preferredName', 'Preferred Name / Nickname'),
     dateField('participant.dateOfBirth', 'Date of Birth'),
-    text('participant.ssnLast4', 'Social Security # Last 4 Digits'),
+    text('participant.ssnFull', 'Full SSN'),
     text('participant.genderIdentity', 'Gender Identity'),
-    text('participant.pronouns', 'Pronouns'),
-    checks('participant.raceEthnicity', 'Race / Ethnicity', [
-      'American Indian / Alaska Native',
-      'Asian',
-      'Black / African American',
-      'Hispanic / Latino',
-      'Native Hawaiian / Pacific Islander',
-      'White',
-      'Two or more races',
-      'Prefer not to say',
-    ]),
+    checks('participant.raceEthnicity', 'Race / Ethnicity', ['American Indian / Alaska Native', 'Asian', 'Black / African American', 'Hispanic / Latino', 'Native Hawaiian / Pacific Islander', 'White', 'Two or more races', 'Prefer not to say']),
     text('participant.currentAddress', 'Current Address'),
     text('participant.primaryPhone', 'Primary Phone'),
     text('participant.alternatePhone', 'Alternate Phone'),
     text('participant.email', 'Email Address'),
-    text('participant.preferredContactMethod', 'Preferred Contact Method'),
     text('participant.currentHousingStatus', 'Current Housing Status'),
-    text('participant.educationLevel', 'Education Level'),
-    text('participant.employmentStatus', 'Employment Status'),
     text('participant.primaryLanguage', 'Primary Language'),
     text('participant.medicaidId', 'Medicaid ID #'),
-    text('participant.medicareId', 'Medicare ID #'),
     text('participant.primaryInsurance', 'Primary Insurance / Payer'),
     text('participant.policyMemberId', 'Policy / Member ID'),
   ]),
-  section('Form 2 - Emergency Contact & Guardian Information', [
+  section('Emergency Contact & Guardian Information', [
     text('emergency.contactFullName', 'Emergency Contact Full Name'),
     text('emergency.relationship', 'Relationship to Participant'),
     text('emergency.primaryPhone', 'Primary Phone'),
     text('emergency.alternatePhone', 'Alternate Phone'),
     text('emergency.address', 'Address'),
-    select('emergency.hasGuardian', 'Has Legal Guardian?', ['Yes', 'No']),
+    boolField('emergency.hasGuardian', 'Has Legal Guardian'),
+    boolField('emergency.hasNoGuardian', 'No Legal Guardian'),
     text('emergency.guardianFullName', 'Guardian / Representative Full Name'),
     text('emergency.guardianRelationship', 'Guardian Relationship'),
     text('emergency.guardianPhone', 'Guardian Primary Phone'),
     text('emergency.guardianEmail', 'Guardian Email'),
     text('emergency.guardianMailingAddress', 'Guardian Mailing Address'),
     longText('emergency.legalAuthority', 'Legal Authority / Scope'),
-    checks('emergency.documentation', 'Documentation', [
-      'Power of Attorney on file',
-      'Guardianship Order on file',
-      'Healthcare Proxy on file',
-      'None - participant self-directs',
-    ]),
+    checks('emergency.documentation', 'Documentation', ['Power of Attorney on file', 'Guardianship Order on file', 'Healthcare Proxy on file', 'None - participant self-directs']),
   ]),
-  section('Form 3 - Referral, Program Interest & Goals', [
-    text('referral.referralSource', 'Referral Source'),
-    text('referral.referringAgencyPerson', 'Referring Agency / Person'),
-    dateField('referral.referralDate', 'Referral Date'),
-    text('referral.referralContactPhone', 'Referral Contact Phone'),
-    longText('referral.reason', 'Reason for Seeking Residential Services'),
-    checks('referral.programsOfInterest', 'Programs of Interest', [
-      'Group Home / Residential Habilitation',
-      'Supported Living',
-      'Community Development Services (CDS)',
-      'Day Habilitation',
-      'Employment / Vocational Support',
-      'Behavioral Support Services',
-      'Family / Caregiver Support',
-      'Respite Services',
-    ]),
-    text('referral.housingStatusAtReferral', 'Housing Status at Referral'),
-    text('referral.incomeSources', 'Income Source(s)'),
-    checks('referral.areasOfSupportNeeded', 'Areas of Support Needed', [
-      'Personal Care / ADLs',
-      'Medication Management',
-      'Meal Preparation / Nutrition',
-      'Transportation',
-      'Community Integration',
-      'Social Skills',
-      'Financial Management',
-      'Health & Wellness',
-      'Communication Support',
-      'Behavioral Support',
-      'Employment / Education',
-      'Family Relationships',
-    ]),
-    longText('referral.shortTermGoals', 'Short-Term Goals (0–6 months)'),
-    longText('referral.longTermGoals', 'Long-Term Goals (6+ months)'),
+  section('Clinical / High-Support Needs Assessment', [
+    select('clinical.codeStatus', 'Code Status', ['Full Code', 'DNR - on file', 'DNI']),
   ]),
-  section('Form 4 - Risk Screening', [
-    checks('risk.indicators', 'Risk Indicators (check all that apply)', [
-      'History of psychiatric hospitalization',
-      'Current behavioral concerns or incidents',
-      'Medical fragility / complex medical needs',
-      'High supervision needs (24-hr or 1:1)',
-      'History of self-injurious behavior',
-      'Aggression toward others',
-      'Elopement risk',
-      'Substance use history',
-      'History of trauma / abuse',
-      'Involvement with criminal justice system',
-      'None of the above',
-      'Other',
-    ]),
-    longText('risk.description', 'Describe any checked risk indicators (dates, frequency, context, current status)'),
-    text('risk.otherIndicator', 'Other Risk Indicator'),
-    select('risk.overallRiskLevel', 'Overall Risk Level Assessment', ['Low', 'Moderate', 'High', 'Requires Clinical Review']),
-    select('risk.form5Required', 'Clinical / High-Support Section Required?', ['Yes - proceed to Form 5', 'No - skip to Form 6']),
-  ]),
-  section('Form 5 - Clinical / High-Support Needs Assessment', [
-    longText('clinical.primaryDiagnoses', 'Primary Diagnosis / Diagnoses (ICD codes if available)'),
-    longText('clinical.knownAllergies', 'Known Allergies (medications, food, environmental)'),
-    checks('clinical.dietaryNeeds', 'Dietary Needs', [
-      'No restrictions',
-      'Texture-modified diet',
-      'Low sodium',
-      'Diabetic diet',
-      'Vegetarian / Vegan',
-      'Religious dietary restrictions',
-      'Other',
-    ]),
-    longText('clinical.dietaryDetails', 'Dietary Details / Restrictions'),
-    select('clinical.dailyLivingSupportLevel', 'Daily Living Support Level Required:', ['Independent', 'Minimal Assistance', 'Moderate Assistance', 'Extensive Assistance', 'Total Assistance']),
-    select('clinical.mobilityNeeds', 'Mobility Needs:', ['Ambulatory - independent', 'Ambulatory - with device', 'Wheelchair - self-propelled', 'Wheelchair - dependent', 'Bed-bound / transfer required']),
-    checks('clinical.assistiveDevices', 'Assistive Devices / Equipment', [
-      'None',
-      'Wheelchair',
-      'Walker / Cane',
-      'Hearing Aid',
-      'Communication Device (AAC)',
-      'Feeding Tube / PEG',
-      'Oxygen',
-      'CPAP / BiPAP',
-      'Catheter',
-      'Other',
-    ]),
-    text('clinical.primaryCommunicationMethod', 'Primary Communication Method'),
-    text('clinical.supervisionLevelRequired', 'Supervision Level Required'),
-    longText('clinical.communicationNeeds', 'Communication Needs / Special Instructions'),
-    longText('clinical.behavioralSafetyConsiderations', 'Behavioral Safety Considerations'),
-    select('clinical.codeStatus', 'Code Status', ['Full Code', 'DNR - on file', 'DNI', 'Comfort Care Only', 'Unknown / Not established']),
-    text('clinical.additionalClinicalNotes', 'Additional Clinical Notes'),
-  ]),
-  section('Form 6 - Residential Placement Agreement', [
+  section('Residential Placement Agreement', [
+    text('placement.participantName', 'Participant Name'),
     dateField('placement.placementStartDate', 'Placement Start Date'),
     text('placement.residenceHomeAddress', 'Residence / Home Address'),
-    text('placement.roomUnitAssignment', 'Room / Unit Assignment'),
-    checks('placement.fundingSources', 'Funding Source(s)', ['DDA Waiver', 'Medicaid', 'Private Pay', 'Grant Funded', 'Other']),
-    text('placement.otherFundingDetails', 'Other Funding Details'),
-    checks('placement.servicesToBeProvided', 'Services to Be Provided', [
-      'Residential Habilitation (24-hr staffing)',
-      'Personal Care Assistance',
-      'Medication Administration / Management',
-      'Meal Preparation',
-      'Transportation',
-      'Community Integration Activities',
-      'Behavioral Support',
-      'Nursing / Health Monitoring',
-      'Employment / Vocational Support',
-      'Individualized Service Plan (ISP) Development',
-    ]),
-    checks('placement.residentRightsDuringPlacement', 'Resident Rights During Placement', [
-      'To be treated with dignity and respect at all times',
-      'To have privacy in personal matters and communications',
-      'To participate in the development and review of your service plan',
-      'To receive services in a safe, clean, and accessible environment',
-      'To voice grievances without retaliation',
-      'To have personal belongings in your room',
-      'To come and go as appropriate to your support needs and plan',
-      'To receive visitors at reasonable times',
-    ]),
-    longText('placement.financialArrangement', 'Financial Arrangement / Private-Pay Rate'),
-    text('placement.residentSignature', 'Resident / Authorized Representative Signature'),
-    dateField('placement.residentSignatureDate', 'Resident Signature Date'),
-    text('placement.witnessStaffSignature', 'Witness / Staff Signature'),
-    dateField('placement.witnessStaffSignatureDate', 'Witness / Staff Signature Date'),
-    text('placement.printedName', 'Printed Name'),
-    text('placement.staffPrintedName', 'Staff Printed Name'),
+    boolField('placement.group_home', 'Group Home'),
+    boolField('placement.supported_living', 'Supported Living'),
+    boolField('placement.community_development_service', 'Community Development Service'),
+    boolField('placement.day_habilitation', 'Day Habilitation'),
+    boolField('placement.v', 'Vocational / Employment Support'),
+    boolField('placement.behavioral_support', 'Behavioral Support'),
+    boolField('placement.family_caregiver', 'Family / Caregiver Support'),
+    boolField('placement.respite', 'Respite'),
   ]),
-  section('Form 7 - Consent for Services & HIPAA Acknowledgement', [
-    select('consent.scopeDuration', 'Consent Scope / Duration', ['Duration of placement', 'Specific period', 'Until revoked in writing']),
-    dateField('consent.startDate', 'Consent Start Date'),
-    dateField('consent.endDate', 'Consent End Date'),
+  section('Consent for Services & HIPAA Acknowledgement', [
     text('consent.participantSignature', 'Participant / Authorized Representative Signature'),
-    dateField('consent.signatureDate', 'Date'),
-    text('consent.staffWitnessSignature', 'Staff Witness Signature'),
+    dateField('consent.signatureDate', 'Signature Date'),
     text('consent.printedName', 'Printed Name'),
-    text('consent.relationship', 'Relationship'),
+    text('consent.ParticipantAdress', 'Participant Address'),
+    text('consent.ParticipantNum', 'Participant Phone Number'),
+    text('consent.staffWitnessSignature', 'Staff Witness Signature'),
+    text('consent.staffWitnessName', 'Staff Witness Name'),
+    text('consent.staffWitnessTitle', 'Staff Witness Title'),
+    dateField('consent.staffWitnessDate', 'Staff Witness Date'),
   ]),
-  section('Form 8 - Release of Information (ROI)', [
+  section('Release of Information (ROI)', [
     text('roi.participantFullName', 'Participant Full Name'),
     dateField('roi.dateOfBirth', 'Date of Birth'),
     text('roi.nameOrganization', 'Name / Organization'),
@@ -253,23 +96,15 @@ const FIELD_SCHEMA = [
     text('roi.phoneNumber', 'Phone Number'),
     text('roi.faxNumber', 'Fax Number'),
     text('roi.address', 'Address'),
-    checks('roi.informationTypes', 'Type of Information to Be Released', [
-      'Discharge Summary',
-      'History and Physical Exam',
-      'Consultation Reports',
-      'Reports of Operation',
-      'Medication Records',
-      'Imaging / Lab Reports',
-      'Nursing Notes',
-      'Psychological / Psychiatric Records',
-      'ISP / Support Plan',
-      'Other',
-    ]),
-    // Sensitive Information - changed to checkboxes for Authorize
-    checks('roi.hivAidsAuthorize', 'HIV / AIDS Treatment - Authorize', ['Authorize']),
-    checks('roi.mentalHealthAuthorize', 'Mental Health Records - Authorize', ['Authorize']),
-    checks('roi.substanceAlcoholAuthorize', 'Substance / Alcohol Abuse Treatment - Authorize', ['Authorize']),
-    checks('roi.recordsFromAnotherAuthorize', 'Records from Another Provider - Authorize', ['Authorize']),
+    checks('roi.informationTypes', 'Type of Information to Be Released', ['Discharge Summary', 'History and Physical Exam', 'Consultation Reports', 'Reports of Operation', 'Medication Records', 'Imaging / Lab Reports', 'Nursing Notes', 'Psychological / Psychiatric Records', 'ISP / Support Plan', 'Other']),
+    boolField('roi.mentalHealthRecords', 'Mental Health Records - Authorize'),
+    boolField('roi.mentalHealthRecordsNo', 'Mental Health Records - Do Not Release'),
+    boolField('roi.hivAidsTreatment', 'HIV / AIDS Treatment - Authorize'),
+    boolField('roi.hivAidsTreatmentNo', 'HIV / AIDS Treatment - Do Not Release'),
+    boolField('roi.substanceAlcoholTreatment', 'Substance / Alcohol Abuse Treatment - Authorize'),
+    boolField('roi.substanceAlcoholTreatmentNo', 'Substance / Alcohol Abuse Treatment - Do Not Release'),
+    boolField('roi.recordsFromAnotherProvider', 'Records from Another Provider - Authorize'),
+    boolField('roi.recordsFromAnotherProviderNo', 'Records from Another Provider - Do Not Release'),
     checks('roi.purposeOfDisclosure', 'Purpose of Disclosure', ['At my request', 'Healthcare / Treatment', 'Payment / Insurance', 'Coordination of Services', 'Employment', 'Other']),
     dateField('roi.effectiveDate', 'Authorization Effective Date'),
     dateField('roi.expirationDate', 'Authorization Expiration Date'),
@@ -279,79 +114,30 @@ const FIELD_SCHEMA = [
     text('roi.printedName', 'Printed Name'),
     text('roi.relationship', 'Relationship'),
   ]),
-  section('Form 9 - Rights & Responsibilities Acknowledgement', [
+  section('Rights & Responsibilities Acknowledgement', [
     text('rights.signature', 'Participant / Representative Signature'),
     dateField('rights.date', 'Date'),
-    text('rights.staffWitness', 'Staff Witness'),
     text('rights.printedName', 'Printed Name'),
     text('rights.relationship', 'Relationship'),
   ]),
-  section('Signature Page - Participant, Guardian & Responsible Party', [
-    text('signature.participantFullName', 'Participant Full Name'),
-    text('signature.participantSignature', 'Participant Signature'),
-    dateField('signature.participantDate', 'Date'),
-    text('signature.participantAddress', 'Participant Address'),
-    text('signature.participantPhone', 'Participant Phone Number'),
-    text('signature.guardianFullName', 'Guardian Full Name'),
-    text('signature.guardianSignature', 'Guardian Signature'),
-    dateField('signature.guardianDate', 'Guardian Date'),
-    text('signature.guardianRelationship', 'Guardian Relationship to Participant'),
-    text('signature.guardianPhone', 'Guardian Phone Number'),
-    text('signature.guardianAddress', 'Guardian Address'),
-    text('signature.legalAuthorityDocumentation', 'Legal Authority / Documentation on File'),
-    text('signature.responsiblePartyFullName', 'Responsible Party Full Name'),
-    text('signature.responsiblePartySignature', 'Responsible Party Signature'),
-    dateField('signature.responsiblePartyDate', 'Responsible Party Date'),
-    text('signature.responsiblePartyAddress', 'Responsible Party Address'),
-    text('signature.responsiblePartyRelationship', 'Responsible Party Relationship to Participant'),
-    text('signature.responsiblePartyPhone', 'Responsible Party Phone Number'),
-    text('signature.responsiblePartyCapacityRole', 'Capacity / Role'),
-    text('signature.staffFullName', 'Staff Full Name'),
-    text('signature.staffTitle', 'Staff Title'),
-    text('signature.staffSignature', 'Staff Signature'),
-    dateField('signature.staffDate', 'Staff Date'),
-  ]),
-  section('Form 10 - Staff Intake Review & Eligibility Determination', [
-    dateField('staff.intakeReviewDate', 'Intake Review Date'),
-    text('staff.reviewingStaff', 'Reviewing Staff / Case Manager'),
-    text('staff.participantFullName', 'Participant Full Name'),
-    dateField('staff.dateOfAdmission', 'Date of Admission'),
-    select('staff.eligibilityStatus', 'Eligibility Status', ['Approved - Admit to Residential Services', 'Pending - Additional information required', 'Not Eligible - See notes']),
-    checks('staff.fundingSourcesApproved', 'Funding / Program Source Approved', ['DDA Waiver', 'Medicaid', 'Private Pay', 'Grant Funded', 'Other']),
-    text('staff.fundingProgramSourceApproved', 'Funding Notes / Program Source Details'),
-    text('staff.highSupportReviewedBy', 'High-Support / Clinical Needs Reviewed By'),
-    text('staff.clinicianNurseName', 'Clinician / Nurse Name'),
-    text('staff.clinicianTitleCredential', 'Title / Credential'),
-    dateField('staff.reviewDate', 'Review Date'),
-    text('staff.riskLevelConfirmed', 'Risk Level Confirmed'),
-    longText('staff.clinicalRecommendations', 'Clinical Recommendations / Accommodations'),
-    // Documentation Checklist with Received / N/A
-    status('staff.docChecklist.form1', 'Form 1 - Participant Information'),
-    status('staff.docChecklist.form2', 'Form 2 - Emergency Contact & Guardian'),
-    status('staff.docChecklist.form3', 'Form 3 - Referral & Goals'),
-    status('staff.docChecklist.form4', 'Form 4 - Risk Screening'),
-    status('staff.docChecklist.form5', 'Form 5 - Clinical Assessment'),
-    status('staff.docChecklist.form6', 'Form 6 - Placement Agreement'),
-    status('staff.docChecklist.form7', 'Form 7 - Consent & HIPAA'),
-    status('staff.docChecklist.form8', 'Form 8 - Release of Information'),
-    status('staff.docChecklist.form9', 'Form 9 - Rights & Responsibilities'),
-    status('staff.docChecklist.id', 'ID / Photo Identification'),
-    status('staff.docChecklist.insurance', 'Insurance / Medicaid Card'),
-    status('staff.docChecklist.guardianshipDocs', 'Guardianship Documentation'),
-    status('staff.docChecklist.physicianOrders', 'Physician Orders / Health Summary'),
-    status('staff.docChecklist.behavioralPlan', 'Current Behavioral Support Plan'),
-    status('staff.docChecklist.ispPriorProvider', 'ISP from Prior Provider'),
-    dateField('staff.orientationScheduledDate', 'Orientation Scheduled Date'),
-    dateField('staff.initialIspMeetingDate', 'Initial ISP Meeting Date'),
-    text('staff.assignedResidenceHome', 'Assigned Residence / Home'),
-    text('staff.assignedCaseManager', 'Assigned Case Manager'),
-    longText('staff.notes', 'Staff Notes / Additional Comments'),
-    text('staff.intakeCoordinatorSignature', 'Intake Coordinator / Case Manager Signature'),
-    dateField('staff.signatureDate', 'Date'),
-    text('staff.supervisorSignature', 'Supervisor Signature'),
-    text('staff.printedName', 'Printed Name'),
-    text('staff.supervisorTitle', 'Title'),
-  ]),
+];
+
+const CHECKBOX_PLACEHOLDER_ALIASES = {
+  'checklist.identification|State-Issued Photo ID': 'state_id',
+  'checklist.clinicalFunctionalInformation|Current Nursing Assessment (if applicable)': 'full_current_nursing_assessment_if_applicable',
+  'checklist.clinicalFunctionalInformation|Recent Medical Appointments / Therapy Plans (OT, PT, Speech, etc.)': 'therapy_plans_ot_pt_speech_etc',
+};
+
+const SECTION_ORDER = [
+  'Cover / Admission Summary',
+  'New Admission Documentation Checklist',
+  'Participant Information & Demographics',
+  'Clinical / High-Support Needs Assessment',
+  'Emergency Contact & Guardian Information',
+  'Release of Information (ROI)',
+  'Rights & Responsibilities Acknowledgement',
+  'Residential Placement Agreement',
+  'Consent for Services & HIPAA Acknowledgement',
 ];
 
 function doPost(e) {
@@ -370,33 +156,30 @@ function setupWorkbook() {
 }
 
 function saveSubmission(data) {
+  const sheet = getSheet();
+  const headers = ensureHeaders(sheet);
+  const entryId = Utilities.getUuid();
+  const submittedAt = new Date();
+  let pdfFile;
   try {
-    const sheet = getSheet();
-    const headers = ensureHeaders(sheet);
-    const entryId = Utilities.getUuid();
-    const submittedAt = new Date();
-    let pdfFile;
-    try {
-      pdfFile = createPdf(data, entryId);
-    } catch (pdfError) {
-      Logger.log('PDF creation failed, continuing with spreadsheet save: ' + pdfError);
-      pdfFile = {
-        getUrl: function() { return 'PDF creation failed: ' + pdfError.message; },
-        getId: function() { return 'failed'; }
-      };
-    }
-    const rowObject = buildRowObject(data, entryId, submittedAt, pdfFile.getUrl());
-    sheet.appendRow(headers.map((header) => rowObject[header] || ''));
-    try {
-      sendNotification(data, pdfFile);
-    } catch (emailError) {
-      Logger.log('Email notification failed: ' + emailError);
-    }
-    return { entryId, pdfUrl: pdfFile.getUrl(), pdfId: pdfFile.getId() };
-  } catch (error) {
-    Logger.log('Submission save error: ' + error);
-    throw new Error('Failed to save submission: ' + error.message);
+    pdfFile = createPdf(data, entryId);
+  } catch (pdfError) {
+    Logger.log('PDF creation failed, continuing with spreadsheet save: ' + pdfError);
+    pdfFile = {
+      getUrl: function() { return 'PDF creation failed: ' + pdfError.message; },
+      getId: function() { return 'failed'; },
+      getName: function() { return 'PDF creation failed'; },
+      getBlob: function() { return Utilities.newBlob('', 'text/plain', 'pdf-error.txt'); },
+    };
   }
+  const rowObject = buildRowObject(data, entryId, submittedAt, pdfFile.getUrl());
+  sheet.appendRow(headers.map((header) => rowObject[header] || ''));
+  try {
+    sendNotification(data, pdfFile);
+  } catch (emailError) {
+    Logger.log('Email notification failed: ' + emailError);
+  }
+  return { entryId, pdfUrl: pdfFile.getUrl(), pdfId: pdfFile.getId() };
 }
 
 function getSheet() {
@@ -444,6 +227,8 @@ function buildRowObject(data, entryId, submittedAt, pdfUrl) {
         row[`${field.section} | ${field.label} | ${option}`] = selected.includes(option) ? 'Yes' : 'No';
       });
       row[`${field.section} | ${field.label} | Selected`] = selected.join(', ');
+    } else if (field.type === 'boolean') {
+      row[`${field.section} | ${field.label}`] = value === true ? 'Yes' : 'No';
     } else {
       row[`${field.section} | ${field.label}`] = formatValue(value);
     }
@@ -452,101 +237,67 @@ function buildRowObject(data, entryId, submittedAt, pdfUrl) {
 }
 
 function createPdf(data, entryId) {
-  try {
-    if (CONFIG.templateDocId) {
-      return createPdfFromTemplate(data, entryId);
-    }
-    return createSummaryPdf(data, entryId);
-  } catch (error) {
-    Logger.log('PDF creation error: ' + error);
-    return {
-      getUrl: function() { return 'PDF creation failed: ' + error.message; },
-      getId: function() { return 'failed'; }
-    };
-  }
+  if (CONFIG.templateDocId) return createPdfFromTemplate(data, entryId);
+  return createSummaryPdf(data, entryId);
 }
 
 function createPdfFromTemplate(data, entryId) {
-  try {
-    const name = `DOFA Intake - ${safeName(getDeep(data, 'cover.participantName') || getDeep(data, 'participant.fullLegalName') || entryId)}`;
-    const folder = DriveApp.getFolderById(CONFIG.driveFolderId);
-    const templateFile = DriveApp.getFileById(CONFIG.templateDocId);
-    const workingCopy = templateFile.makeCopy(`${name} - Working Copy`, folder);
-    const doc = DocumentApp.openById(workingCopy.getId());
-    const body = doc.getBody();
+  const name = `DOFA Intake - ${safeName(getDeep(data, 'participant.fullLegalName') || getDeep(data, 'placement.participantName') || getDeep(data, 'roi.participantFullName') || entryId)}`;
+  const folder = DriveApp.getFolderById(CONFIG.driveFolderId);
+  const templateFile = DriveApp.getFileById(CONFIG.templateDocId);
+  const workingCopy = templateFile.makeCopy(`${name} - Working Copy`, folder);
+  const doc = DocumentApp.openById(workingCopy.getId());
+  const body = doc.getBody();
+  const replacements = buildReplacements(data, entryId);
 
-    // Build replacement values
-    const replacements = buildReplacements(data, entryId);
+  Object.keys(replacements).forEach((placeholder) => {
+    try {
+      body.replaceText(`{{${placeholder}}}`, replacements[placeholder]);
+    } catch (e) {
+      Logger.log(`Failed to replace {{${placeholder}}}: ${e.message}`);
+    }
+  });
 
-    // Replace each placeholder
-    Object.keys(replacements).forEach((placeholder) => {
-      const searchText = `{{${placeholder}}}`;
-      const replacementValue = replacements[placeholder];
-      try {
-        body.replaceText(searchText, replacementValue);
-      } catch (e) {
-        Logger.log(`Failed to replace {{${placeholder}}}: ${e.message}`);
-      }
-    });
-
-    doc.saveAndClose();
-    const pdfBlob = workingCopy.getAs(MimeType.PDF).setName(`${name}.pdf`);
-    const pdfFile = folder.createFile(pdfBlob);
-    workingCopy.setTrashed(true);
-    return pdfFile;
-  } catch (error) {
-    Logger.log('Template PDF creation error: ' + error);
-    throw new Error('Failed to create PDF from template: ' + error.message);
-  }
+  doc.saveAndClose();
+  const pdfBlob = workingCopy.getAs(MimeType.PDF).setName(`${name}.pdf`);
+  const pdfFile = folder.createFile(pdfBlob);
+  workingCopy.setTrashed(true);
+  return pdfFile;
 }
 
 function createSummaryPdf(data, entryId) {
-  try {
-    const name = `DOFA Intake - ${safeName(getDeep(data, 'cover.participantName') || getDeep(data, 'participant.fullLegalName') || entryId)}`;
-    const doc = DocumentApp.create(name);
-    const body = doc.getBody();
+  const name = `DOFA Intake - ${safeName(getDeep(data, 'participant.fullLegalName') || entryId)}`;
+  const doc = DocumentApp.create(name);
+  const body = doc.getBody();
 
-    body.appendParagraph('DOFA PATHWAYS').setHeading(DocumentApp.ParagraphHeading.TITLE);
-    body.appendParagraph('Residential Services - New Admission Intake Package');
-    body.appendParagraph(`Entry ID: ${entryId}`);
-    body.appendParagraph(`Generated: ${new Date().toLocaleString()}`);
-    body.appendParagraph('');
+  body.appendParagraph('DOFA PATHWAYS').setHeading(DocumentApp.ParagraphHeading.TITLE);
+  body.appendParagraph('Residential Services - New Admission Intake Package');
+  body.appendParagraph(`Entry ID: ${entryId}`);
+  body.appendParagraph(`Generated: ${new Date().toLocaleString()}`);
+  body.appendParagraph('');
 
-    const replacements = buildReplacements(data, entryId);
-
-    FIELD_SCHEMA.forEach((sectionDef) => {
-      body.appendParagraph(sectionDef.title).setHeading(DocumentApp.ParagraphHeading.HEADING1);
-      body.appendParagraph('');
-      
-      sectionDef.fields.forEach((field) => {
-        const value = replacements[field.name];
-        
-        if (field.type === 'checkboxGroup') {
-          body.appendParagraph(field.label + ':');
-          field.options.forEach((option) => {
-            const slugged = slug(option);
-            const checked = value && value.includes(option) ? '[✓]' : '[ ]';
-            body.appendParagraph(`  ${checked} ${option}`);
-          });
-        } else {
-          body.appendParagraph(`${field.label}: ${value || '—'}`);
-        }
-        body.appendParagraph('');
-      });
-      body.appendParagraph('');
+  orderedSchema().forEach((sectionDef) => {
+    body.appendParagraph(sectionDef.title).setHeading(DocumentApp.ParagraphHeading.HEADING1);
+    sectionDef.fields.forEach((field) => {
+      const value = getDeep(data, field.name);
+      if (field.type === 'checkboxGroup') {
+        body.appendParagraph(field.label + ': ' + (Array.isArray(value) ? value.join(', ') : ''));
+      } else if (field.type === 'boolean') {
+        body.appendParagraph(`${field.label}: ${value === true ? 'Yes' : 'No'}`);
+      } else {
+        body.appendParagraph(`${field.label}: ${formatValue(value)}`);
+      }
     });
+    body.appendParagraph('');
+  });
 
-    doc.saveAndClose();
-    const docFile = DriveApp.getFileById(doc.getId());
-    const pdfBlob = docFile.getAs(MimeType.PDF).setName(`${name}.pdf`);
-    const folder = DriveApp.getFolderById(CONFIG.driveFolderId);
-    const pdfFile = folder.createFile(pdfBlob);
-    docFile.setTrashed(true);
-    return pdfFile;
-  } catch (error) {
-    Logger.log('Summary PDF creation error: ' + error);
-    throw new Error('Failed to create summary PDF: ' + error.message);
-  }
+  doc.saveAndClose();
+  const docFile = DriveApp.getFileById(doc.getId());
+  const pdfBlob = docFile.getAs(MimeType.PDF).setName(`${name}.pdf`);
+  const folder = DriveApp.getFolderById(CONFIG.driveFolderId);
+  const pdfFile = folder.createFile(pdfBlob);
+  docFile.setTrashed(true);
+  return pdfFile;
 }
 
 function buildReplacements(data, entryId) {
@@ -557,37 +308,21 @@ function buildReplacements(data, entryId) {
 
   flattenFields().forEach((field) => {
     const value = getDeep(data, field.name);
-    
     if (field.type === 'checkboxGroup') {
       const selected = Array.isArray(value) ? value : [];
       replacements[field.name] = selected.join(', ');
       field.options.forEach((option) => {
-        const slugged = slug(option);
-        replacements[`${field.name}.${slugged}`] = selected.includes(option) ? '✓' : '☐';
+        replacements[`${field.name}.${slug(option)}`] = selected.includes(option) ? 'X' : '';
+        const alias = CHECKBOX_PLACEHOLDER_ALIASES[`${field.name}|${option}`];
+        if (alias) replacements[`${field.name}.${alias}`] = selected.includes(option) ? 'X' : '';
       });
-    } else if (field.type === 'select' && field.options && field.options.length === 2 && field.options[0] === 'Received' && field.options[1] === 'N/A') {
-      // STATUS FIELDS (Received / N/A)
-      replacements[field.name] = value || '';
-      
-      if (value === 'Received') {
-        replacements[`${field.name}.received`] = 'Received';
-        replacements[`${field.name}.n_a`] = '';
-      } else if (value === 'N/A') {
-        replacements[`${field.name}.received`] = '';
-        replacements[`${field.name}.n_a`] = '✓';
-      } else {
-        // Neither selected
-        replacements[`${field.name}.received`] = '☐';
-        replacements[`${field.name}.n_a`] = '☐';
-      }
     } else if (field.type === 'select') {
       replacements[field.name] = value || '';
-      if (field.options && field.options.length) {
-        field.options.forEach((option) => {
-          const slugged = slug(option);
-          replacements[`${field.name}.${slugged}`] = value === option ? '✓' : '☐';
-        });
-      }
+      field.options.forEach((option) => {
+        replacements[`${field.name}.${slug(option)}`] = value === option ? 'X' : '';
+      });
+    } else if (field.type === 'boolean') {
+      replacements[field.name] = value === true ? 'X' : '';
     } else if (field.type === 'date') {
       replacements[field.name] = value ? new Date(value).toLocaleDateString() : '';
     } else {
@@ -601,7 +336,7 @@ function buildReplacements(data, entryId) {
 function sendNotification(data, pdfFile) {
   const recipients = CONFIG.emailRecipients.trim();
   if (!recipients) return;
-  const participant = getDeep(data, 'cover.participantName') || getDeep(data, 'participant.fullLegalName') || 'Participant';
+  const participant = getDeep(data, 'participant.fullLegalName') || getDeep(data, 'placement.participantName') || getDeep(data, 'roi.participantFullName') || 'Participant';
   const options = {
     name: 'DOFA Pathways Intake',
     htmlBody: `<p>A new DOFA intake submission was received for <strong>${participant}</strong>.</p><p>PDF: <a href="${pdfFile.getUrl()}">${pdfFile.getName()}</a></p>`,
@@ -611,7 +346,13 @@ function sendNotification(data, pdfFile) {
 }
 
 function flattenFields() {
-  return FIELD_SCHEMA.flatMap((sectionDef) => sectionDef.fields.map((field) => ({ ...field, section: sectionDef.title })));
+  return orderedSchema().flatMap((sectionDef) => sectionDef.fields.map((field) => ({ ...field, section: sectionDef.title })));
+}
+
+function orderedSchema() {
+  const byTitle = {};
+  FIELD_SCHEMA.forEach((sectionDef) => byTitle[sectionDef.title] = sectionDef);
+  return SECTION_ORDER.map((title) => byTitle[title]).filter(Boolean);
 }
 
 function getDeep(data, path) {
@@ -634,10 +375,6 @@ function slug(value) {
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '')
     .slice(0, 80);
-}
-
-function escapeForReplaceText(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function jsonResponse(payload) {
@@ -668,256 +405,70 @@ function checks(name, label, options) {
   return { type: 'checkboxGroup', name, label, options };
 }
 
-function status(name, label) {
-  return select(name, label, ['Received', 'N/A']);
+function boolField(name, label) {
+  return { type: 'boolean', name, label };
 }
 
 function testPopulateTemplate() {
   const testData = {
-    "cover": {
-      "participantName": "Chidera Igboka",
-      "assignedResidence": "Enugu house",
-      "assignedCaseManager": "Bumi",
-      "dateOfAdmission": "2026-05-28"
+    participant: {
+      fullLegalName: 'Test Participant',
+      preferredName: 'Test',
+      dateOfBirth: '2000-01-01',
+      ssnFull: '123-45-6789',
+      genderIdentity: 'Female',
+      raceEthnicity: ['Black / African American'],
+      currentAddress: '123 Main Street',
+      primaryPhone: '555-1000',
+      email: 'test@example.com',
+      currentHousingStatus: 'Home',
+      primaryLanguage: 'English',
+      medicaidId: 'MD-123',
+      primaryInsurance: 'Medicaid',
+      policyMemberId: 'PM-123',
     },
-    "checklist": {
-      "identification": ["Social Security card", "Insurance / Medicaid / Medicare cards", "State ID"],
-      "personCenteredPlan": ["Any recent PCP addendums or revisions", "Goals, outcomes, and support needs relevant to residential services"],
-      "clinicalFunctionalInformation": ["Therapy plans (OT, PT, Speech, etc.)", "MARs (Medication Administration Records) for last 3–6 months", "Recent medical summaries or discharge summaries"],
-      "healthMedicalRecords": ["Immunization record", "Allergies"],
-      "legalDocuments": ["Court orders (if any)", "Guardianship letters / POA documentation"],
-      "residentialDailySupportDetails": ["Staffing needs (1:1 hours, overnight support, etc.)", "Dietary needs and meal plans", "List of assistive devices: wheelchair, gait belt, communication device, etc."],
-      "personalBelongingsTransitionPlanning": ["Date of move agreed by all parties", "Inventory list of personal property", "Handover of durable medical equipment", "Orientation meeting between individual, new provider, CCS, and (if appropriate) family/guardian"]
+    emergency: {
+      contactFullName: 'Emergency Contact',
+      relationship: 'Parent',
+      primaryPhone: '555-2000',
+      hasNoGuardian: true,
+      documentation: ['None - participant self-directs'],
     },
-    "participant": {
-      "fullLegalName": "Igboka Chidera",
-      "preferredName": "Bumi",
-      "dateOfBirth": "2026-05-03",
-      "ssnLast4": "8783",
-      "genderIdentity": "Male",
-      "pronouns": "Chi Chi",
-      "raceEthnicity": ["Black / African American"],
-      "currentAddress": "Irawo",
-      "email": "igbokamalachi@gmail.com",
-      "primaryPhone": "0904342342",
-      "alternatePhone": "234 0993432",
-      "preferredContactMethod": "WhatsApp",
-      "currentHousingStatus": "Lagos",
-      "educationLevel": "University",
-      "employmentStatus": "Student",
-      "primaryLanguage": "Igbo",
-      "medicaidId": "ID43453453",
-      "medicareId": "MD4365342",
-      "primaryInsurance": "Base",
-      "policyMemberId": "2423458"
+    placement: {
+      participantName: 'Test Participant',
+      placementStartDate: '2026-05-18',
+      residenceHomeAddress: '123 Residence Road',
+      group_home: true,
+      respite: true,
     },
-    "emergency": {
-      "contactFullName": "Chidera Igboka",
-      "relationship": "Brother",
-      "primaryPhone": "039430943",
-      "alternatePhone": "204459394",
-      "hasGuardian": "Yes",
-      "guardianFullName": "Chidera Malachi Igboka",
-      "address": "Irawo",
-      "guardianRelationship": "Brother",
-      "guardianPhone": "090343453",
-      "guardianEmail": "igbokamalachi@gmail.com",
-      "guardianMailingAddress": "Igboka's Compound, Amuri Rd., Agenugu State",
-      "documentation": ["Power of Attorney on file", "None - participant self-directs"],
-      "legalAuthority": "example legal scope here"
+    consent: {
+      participantSignature: 'Test Participant',
+      signatureDate: '2026-05-18',
+      ParticipantAdress: '123 Main Street',
+      ParticipantNum: '555-1000',
+      staffWitnessName: 'Staff Person',
+      staffWitnessTitle: 'Coordinator',
+      staffWitnessDate: '2026-05-18',
     },
-    "referral": {
-      "referralSource": "LinkedIn",
-      "referringAgencyPerson": "Planum",
-      "referralDate": "2026-05-03",
-      "referralContactPhone": "09034534",
-      "reason": "I just want to check out another house",
-      "programsOfInterest": ["Group Home / Residential Habilitation", "Day Habilitation"],
-      "housingStatusAtReferral": "Need",
-      "incomeSources": "$1,200",
-      "shortTermGoals": "3 month I want to make 5 million",
-      "longTermGoals": "In 10 months I want to make 120 million dollars",
-      "areasOfSupportNeeded": ["Personal Care / ADLs", "Behavioral Support", "Social Skills", "Medication Management", "Community Integration", "Communication Support"]
+    roi: {
+      participantFullName: 'Test Participant',
+      dateOfBirth: '2000-01-01',
+      nameOrganization: 'Provider',
+      mentalHealthRecordsNo: true,
+      hivAidsTreatmentNo: true,
+      substanceAlcoholTreatmentNo: true,
+      recordsFromAnotherProviderNo: true,
+      purposeOfDisclosure: ['Healthcare / Treatment'],
     },
-    "risk": {
-      "indicators": ["History of psychiatric hospitalization", "Aggression toward others", "History of trauma / abuse"],
-      "description": "I don't have strength to explain anything to you",
-      "overallRiskLevel": "Moderate",
-      "form5Required": "Yes - proceed to Form 5"
+    rights: {
+      signature: 'Test Participant',
+      date: '2026-05-18',
+      printedName: 'Test Participant',
+      relationship: 'Self',
     },
-    "placement": {
-      "placementStartDate": "2026-05-29",
-      "residenceHomeAddress": "Irawo",
-      "roomUnitAssignment": "4",
-      "fundingSources": ["Private Pay"],
-      "financialArrangement": "this and that",
-      "servicesToBeProvided": ["Medication Administration / Management", "Nursing / Health Monitoring", "Meal Preparation"],
-      "residentRightsDuringPlacement": ["To voice grievances without retaliation"],
-      "residentSignature": "Chidera",
-      "residentSignatureDate": "2026-05-03",
-      "witnessStaffSignature": "Bumi",
-      "witnessStaffSignatureDate": "2026-05-29",
-      "printedName": "Chidera",
-      "staffPrintedName": "Chi Buki"
-    },
-    "roi": {
-      "participantFullName": "Chidera Malachi Igboka",
-      "dateOfBirth": "2026-05-03",
-      "nameOrganization": "Proneat",
-      "titlePosition": "Front End Developer",
-      "phoneNumber": "09034434",
-      "faxNumber": "24534",
-      "address": "Igboka's Compound, Amuri Rd., Agenugu State",
-      "informationTypes": ["ISP / Support Plan", "Reports of Operation"],
-      "hivAidsAuthorize": ["Authorize"],
-      "mentalHealthAuthorize": [],
-      "substanceAlcoholAuthorize": ["Authorize"],
-      "recordsFromAnotherAuthorize": ["Authorize"],
-      "purposeOfDisclosure": ["Payment / Insurance"],
-      "effectiveDate": "2026-05-28",
-      "expirationDate": "2026-05-28",
-      "signatureDate": "2026-05-30",
-      "signature": "Chidera",
-      "printedName": "Chidra",
-      "relationship": "Friend",
-      "staffSignature": "Bookie"
-    },
-    "clinical": {
-      "primaryDiagnoses": "ICD examples",
-      "knownAllergies": "I don't know any",
-      "dietaryNeeds": ["Low sodium", "Diabetic diet"],
-      "dietaryDetails": "I don't know any",
-      "dailyLivingSupportLevel": "Moderate Assistance",
-      "mobilityNeeds": "Wheelchair - self-propelled",
-      "assistiveDevices": ["Oxygen", "Wheelchair"],
-      "primaryCommunicationMethod": "Book",
-      "supervisionLevelRequired": "Room",
-      "communicationNeeds": "this and that",
-      "codeStatus": "DNR - on file",
-      "additionalClinicalNotes": "no note",
-      "behavioralSafetyConsiderations": "this is bad"
-    },
-    "consent": {
-      "scopeDuration": "Duration of placement",
-      "startDate": "2026-05-03",
-      "endDate": "2026-05-03",
-      "signatureDate": "2026-05-03",
-      "printedName": "Hello",
-      "relationship": "Friend",
-      "staffWitnessSignature": "Chidera",
-      "participantSignature": "Chidrea"
-    },
-    "signature": {
-      "participantFullName": "Chidera Igboka",
-      "participantSignature": "Chidera Signature",
-      "participantDate": "2026-05-31",
-      "participantAddress": "Irawo",
-      "participantPhone": "645343",
-      "guardianFullName": "Chidera Malachi Igboka",
-      "guardianSignature": "Guardian Signature Here",
-      "guardianAddress": "Irawo",
-      "responsiblePartyFullName": "Chidera Malachi Igboka",
-      "guardianDate": "2026-05-28",
-      "guardianPhone": "090675645",
-      "guardianRelationship": "Brother",
-      "legalAuthorityDocumentation": "Power of Attorney document on file",
-      "responsiblePartySignature": "Responsible Party Signature",
-      "responsiblePartyDate": "2026-05-30",
-      "responsiblePartyAddress": "Igboka's Compound, Amuri Rd., Agenugu State",
-      "responsiblePartyRelationship": "Brother",
-      "responsiblePartyPhone": "090675645",
-      "responsiblePartyCapacityRole": "Legal Guardian",
-      "staffFullName": "Staff Full Name Here",
-      "staffTitle": "Intake Coordinator",
-      "staffSignature": "Staff Signature Here",
-      "staffDate": "2026-05-30"
-    },
-    "rights": {
-      "signature": "Chidra",
-      "date": "2026-05-30",
-      "staffWitness": "Staff Witness Name",
-      "printedName": "Me",
-      "relationship": "Boyfriend"
-    },
-    "staff": {
-      "intakeReviewDate": "2026-05-27",
-      "reviewingStaff": "Reviewing Staff Name",
-      "participantFullName": "Igboka Chidera",
-      "dateOfAdmission": "2026-05-28",
-      "eligibilityStatus": "Approved - Admit to Residential Services",
-      "fundingSourcesApproved": ["Private Pay", "Medicaid"],
-      "fundingProgramSourceApproved": "Funding approved from multiple sources",
-      "highSupportReviewedBy": "Clinical Review Team",
-      "clinicianNurseName": "Nurse Name Here",
-      "clinicianTitleCredential": "RN, MSN",
-      "reviewDate": "2026-05-27",
-      "riskLevelConfirmed": "Moderate",
-      "clinicalRecommendations": "Weekly monitoring and behavioral support recommended",
-      "orientationScheduledDate": "2026-05-24",
-      "initialIspMeetingDate": "2026-05-27",
-      "assignedResidenceHome": "3R",
-      "assignedCaseManager": "Case Manager Name",
-      "docChecklist": {
-        "form1": "Received",
-        "form2": "N/A",
-        "form3": "Received",
-        "form4": "Received",
-        "form5": "N/A",
-        "form6": "Received",
-        "form7": "N/A",
-        "form8": "Received",
-        "form9": "Received",
-        "id": "Received",
-        "insurance": "N/A",
-        "guardianshipDocs": "Received",
-        "physicianOrders": "Received",
-        "behavioralPlan": "N/A",
-        "ispPriorProvider": "N/A"
-      },
-      "notes": "Additional staff notes go here",
-      "intakeCoordinatorSignature": "Coordinator Signature",
-      "signatureDate": "2026-05-28",
-      "supervisorSignature": "Supervisor Signature Here",
-      "printedName": "Bookie",
-      "supervisorTitle": "Program Supervisor"
-    }
   };
 
-  try {
-    if (!CONFIG.templateDocId) {
-      Logger.log('ERROR: CONFIG.templateDocId is empty.');
-      return { success: false, error: 'Template ID not set' };
-    }
-
-    Logger.log('Starting test population...');
-    const pdfFile = createPdfFromTemplate(testData, 'TEST-' + Utilities.getUuid());
-    Logger.log('✅ SUCCESS! PDF created: ' + pdfFile.getUrl());
-    return { success: true, pdfUrl: pdfFile.getUrl() };
-  } catch (error) {
-    Logger.log('❌ ERROR: ' + error.toString());
-    return { success: false, error: error.toString() };
-  }
-}
-
-function diagnoseDocChecklist() {
-  const testData = {
-    staff: {
-      docChecklist: {
-        form1: "Received",
-        form2: "N/A",
-        form3: "Received",
-        form4: "N/A",
-        form5: "Received"
-      }
-    }
-  };
-  
-  const replacements = buildReplacements(testData, 'TEST');
-  
-  Logger.log('=== DOC CHECKLIST REPLACEMENTS ===');
-  Object.keys(replacements).forEach(key => {
-    if (key.includes('docChecklist')) {
-      Logger.log(`{{${key}}} = "${replacements[key]}"`);
-    }
-  });
+  const pdfFile = createPdfFromTemplate(testData, 'TEST-' + Utilities.getUuid());
+  Logger.log('PDF created: ' + pdfFile.getUrl());
+  return { success: true, pdfUrl: pdfFile.getUrl() };
 }
