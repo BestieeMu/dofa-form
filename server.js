@@ -111,10 +111,28 @@ function renderPdf(data, res) {
     doc.y += 34;
     const rows = flattenEntries(content);
     for (const row of rows) {
-      ensureSpace(doc, 42);
+      const isImg = typeof row.value === 'string' && row.value.startsWith('data:image/');
+      const neededHeight = isImg ? 60 : 42;
+      ensureSpace(doc, neededHeight);
+      
       const startY = doc.y;
       doc.font('Helvetica-Bold').fontSize(9).fillColor('#333333').text(row.label, 58, startY, { width: 190 });
-      doc.font('Helvetica').fontSize(9).fillColor('#000000').text(row.value, 255, startY, { width: 285 });
+      
+      if (isImg) {
+        try {
+          const base64Data = row.value.split(';base64,').pop();
+          const imgBuffer = Buffer.from(base64Data, 'base64');
+          doc.image(imgBuffer, 255, startY, { fit: [150, 40] });
+          doc.y = startY + 45;
+        } catch (e) {
+          console.error('Error drawing PDF image:', e);
+          doc.font('Helvetica').fontSize(9).fillColor('#dc3545').text('[Failed to render signature image]', 255, startY, { width: 285 });
+          doc.y = startY + 15;
+        }
+      } else {
+        doc.font('Helvetica').fontSize(9).fillColor('#000000').text(row.value, 255, startY, { width: 285 });
+      }
+      
       doc.moveTo(55, doc.y + 4).lineTo(545, doc.y + 4).strokeColor('#eeeeee').stroke();
       doc.y += 10;
     }

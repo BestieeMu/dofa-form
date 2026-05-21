@@ -1,4 +1,5 @@
 import { useForm } from '../FormContext.jsx';
+import SignatureInput from '../components/SignatureInput.jsx';
 
 const sensitiveFields = [
   ['roi.mentalHealthRecords', 'roi.mentalHealthRecordsNo', 'Mental Health Records'],
@@ -45,9 +46,9 @@ export default function StepForm8() {
     <div className="checkboxes">{['At my request', 'Healthcare / Treatment', 'Payment / Insurance', 'Coordination of Services', 'Employment', 'Other'].map(o => (<label key={o}><input type="checkbox" checked={checkboxChecked('roi.purposeOfDisclosure', o)} onChange={() => handleCheckboxChange('roi.purposeOfDisclosure', o)} />{o}</label>))}</div>
     <h3>Signatures</h3>
     <div className="grid">
-      <div><label>Participant / Authorized Representative Signature</label><input name="roi.signature" value={getDeep('roi.signature') || ''} onChange={handleChange} /></div>
+      <SignatureInput name="roi.signature" label="Participant / Authorized Representative Signature" />
       <div><label>Date</label><input type="date" name="roi.signatureDate" value={getDeep('roi.signatureDate') || ''} onChange={handleChange} /></div>
-      <div><label>Staff Signature</label><input name="roi.staffSignature" value={getDeep('roi.staffSignature') || ''} onChange={handleChange} /></div>
+      <SignatureInput name="roi.staffSignature" label="Staff Signature" />
       <div><label>Printed Name</label><input name="roi.printedName" value={getDeep('roi.printedName') || ''} onChange={handleChange} /></div>
       <div><label>Relationship</label><input name="roi.relationship" value={getDeep('roi.relationship') || ''} onChange={handleChange} /></div>
     </div>

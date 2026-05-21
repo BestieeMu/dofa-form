@@ -143,7 +143,7 @@ function App() {
   const isLastStep = currentStep === STEPS.length - 1;
   const StepComponent = STEP_COMPONENTS[currentStep];
   const stepDef = STEPS[currentStep];
-  const ctxValue = { data, handleChange, handleBooleanChange, handleCheckboxChange, checkboxChecked, getDeep: (path) => getDeep(data, path), errors };
+  const ctxValue = { data, setData, handleChange, handleBooleanChange, handleCheckboxChange, checkboxChecked, getDeep: (path) => getDeep(data, path), errors };
 
   return (
     <FormContext.Provider value={ctxValue}>

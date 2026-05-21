@@ -226,10 +226,39 @@ function saveSubmission(data) {
   const rootFolder       = DriveApp.getFolderById(CONFIG.driveFolderId);
   const participantFolder = getOrCreateSubfolder(rootFolder, participantName);
 
+  // ── Process Base64 Signature Images ──────────────────────────────────────
+  const signatures = {};
+  const signatureFields = [
+    'consent.participantSignature',
+    'consent.staffWitnessSignature',
+    'roi.signature',
+    'roi.staffSignature',
+    'rights.signature'
+  ];
+
+  signatureFields.forEach((fieldPath) => {
+    const val = getDeep(data, fieldPath);
+    if (typeof val === 'string' && val.indexOf('data:image/') === 0) {
+      try {
+        signatures[fieldPath] = val;
+        const parts = val.split(';base64,');
+        const contentType = parts[0].split(':')[1];
+        const base64Data = parts[1];
+        const decodedBytes = Utilities.base64Decode(base64Data);
+        const blob = Utilities.newBlob(decodedBytes, contentType, `${participantName}_${fieldPath.replace('.', '_')}.png`);
+        const file = participantFolder.createFile(blob);
+        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        setDeep(data, fieldPath, file.getUrl());
+      } catch (err) {
+        Logger.log('Failed to save signature image for ' + fieldPath + ': ' + err);
+      }
+    }
+  });
+
   // ── Generate Main Intake PDF ──────────────────────────────────────────────
   let mainPdfFile;
   try {
-    mainPdfFile = createMainIntakePdf(data, entryId, participantName, participantFolder);
+    mainPdfFile = createMainIntakePdf(data, entryId, participantName, participantFolder, signatures);
   } catch (err) {
     Logger.log('Main intake PDF creation failed: ' + err);
     mainPdfFile = makeDummyFileObject('Main PDF creation failed: ' + err.message);
@@ -238,7 +267,7 @@ function saveSubmission(data) {
   // ── Generate Form 3 (ROI) PDF ─────────────────────────────────────────────
   let roiPdfFile;
   try {
-    roiPdfFile = createRoiPdf(data, entryId, participantName, participantFolder);
+    roiPdfFile = createRoiPdf(data, entryId, participantName, participantFolder, signatures);
   } catch (err) {
     Logger.log('ROI PDF creation failed: ' + err);
     roiPdfFile = makeDummyFileObject('ROI PDF creation failed: ' + err.message);
@@ -278,7 +307,7 @@ function getOrCreateSubfolder(parentFolder, folderName) {
 // -----------------------------------------------------------------------------
 //  MAIN INTAKE PDF  (uses CONFIG.templateDocId)
 // -----------------------------------------------------------------------------
-function createMainIntakePdf(data, entryId, participantName, destinationFolder) {
+function createMainIntakePdf(data, entryId, participantName, destinationFolder, signatures) {
   if (!CONFIG.templateDocId) return createSummaryPdf(data, entryId, participantName, destinationFolder);
 
   const fileName    = `DOFA Intake - ${safeName(participantName)}`;
@@ -290,7 +319,7 @@ function createMainIntakePdf(data, entryId, participantName, destinationFolder) 
   const body = doc.getBody();
 
   const replacements = buildReplacements(data, entryId);
-  applyReplacements(body, replacements);
+  applyReplacements(body, replacements, signatures);
 
   doc.saveAndClose();
 
@@ -305,7 +334,7 @@ function createMainIntakePdf(data, entryId, participantName, destinationFolder) 
 // -----------------------------------------------------------------------------
 //  FORM 3 (ROI) PDF  (uses CONFIG.roiTemplateDocId)
 // -----------------------------------------------------------------------------
-function createRoiPdf(data, entryId, participantName, destinationFolder) {
+function createRoiPdf(data, entryId, participantName, destinationFolder, signatures) {
   if (!CONFIG.roiTemplateDocId || CONFIG.roiTemplateDocId === 'YOUR_ROI_FORM3_TEMPLATE_DOC_ID') {
     throw new Error('roiTemplateDocId is not configured. Please set CONFIG.roiTemplateDocId.');
   }
@@ -320,7 +349,7 @@ function createRoiPdf(data, entryId, participantName, destinationFolder) {
 
   // Build ROI-specific replacements (a focused subset of buildReplacements)
   const replacements = buildRoiReplacements(data, entryId);
-  applyReplacements(body, replacements);
+  applyReplacements(body, replacements, signatures);
 
   doc.saveAndClose();
 
@@ -335,10 +364,15 @@ function createRoiPdf(data, entryId, participantName, destinationFolder) {
 // -----------------------------------------------------------------------------
 //  APPLY REPLACEMENTS  (shared helper used by both template functions)
 // -----------------------------------------------------------------------------
-function applyReplacements(body, replacements) {
+function applyReplacements(body, replacements, signatures) {
+  signatures = signatures || {};
   Object.keys(replacements).forEach((placeholder) => {
     try {
-      body.replaceText(`\\{\\{${placeholder}\\}\\}`, replacements[placeholder]);
+      if (signatures[placeholder]) {
+        replacePlaceholderWithImage(body, placeholder, signatures[placeholder]);
+      } else {
+        body.replaceText(`\\{\\{${placeholder}\\}\\}`, replacements[placeholder]);
+      }
     } catch (e) {
       Logger.log(`Failed to replace {{${placeholder}}}: ${e.message}`);
     }
@@ -566,36 +600,85 @@ function buildRowObject(data, entryId, submittedAt, mainPdfUrl, roiPdfUrl) {
 //  EMAIL NOTIFICATION
 // -----------------------------------------------------------------------------
 function sendNotification(data, participantName, mainPdfFile, roiPdfFile) {
-  const recipients = CONFIG.emailRecipients.trim();
-  if (!recipients) return;
+  const adminRecipients = CONFIG.emailRecipients.trim();
 
-  const htmlBody = `
-    <p>A new DOFA intake submission was received for <strong>${participantName}</strong>.</p>
-    <p>
-      <strong>Main Intake PDF:</strong>
-      <a href="${mainPdfFile.getUrl()}">${mainPdfFile.getName()}</a>
-    </p>
-    <p>
-      <strong>Form 3 ROI PDF:</strong>
-      <a href="${roiPdfFile.getUrl()}">${roiPdfFile.getName()}</a>
-    </p>
-  `;
+  // ── Admin notification ────────────────────────────────────────────────────
+  if (adminRecipients) {
+    const adminHtml = `
+      <p>A new DOFA intake submission was received for <strong>${participantName}</strong>.</p>
+      <p>
+        <strong>Main Intake PDF:</strong>
+        <a href="${mainPdfFile.getUrl()}">${mainPdfFile.getName()}</a>
+      </p>
+      <p>
+        <strong>Form 3 ROI PDF:</strong>
+        <a href="${roiPdfFile.getUrl()}">${roiPdfFile.getName()}</a>
+      </p>
+    `;
 
-  const options = {
-    name:     'DOFA Pathways Intake',
-    htmlBody: htmlBody,
-  };
+    const adminOptions = {
+      name:     'DOFA Pathways Intake',
+      htmlBody: adminHtml,
+    };
 
-  if (CONFIG.emailPdfAsAttachment) {
-    options.attachments = [mainPdfFile.getBlob(), roiPdfFile.getBlob()];
+    if (CONFIG.emailPdfAsAttachment) {
+      adminOptions.attachments = [mainPdfFile.getBlob(), roiPdfFile.getBlob()];
+    }
+
+    MailApp.sendEmail(
+      adminRecipients,
+      `DOFA Intake Submission — ${participantName}`,
+      `Main PDF: ${mainPdfFile.getUrl()}\nROI PDF: ${roiPdfFile.getUrl()}`,
+      adminOptions
+    );
   }
 
-  MailApp.sendEmail(
-    recipients,
-    `DOFA Intake Submission — ${participantName}`,
-    `Main PDF: ${mainPdfFile.getUrl()}\nROI PDF: ${roiPdfFile.getUrl()}`,
-    options
-  );
+  // ── Applicant confirmation email ──────────────────────────────────────────
+  const applicantEmail = getDeep(data, 'participant.email') || '';
+  if (applicantEmail && applicantEmail.indexOf('@') > 0) {
+    const applicantHtml = `
+      <p>Dear <strong>${participantName}</strong>,</p>
+      <p>Thank you for completing the DOFA Pathways Residential Services intake form. We have successfully received your submission.</p>
+      <p>Our team will review your information and reach out to you shortly regarding next steps.</p>
+      <p>If you have any questions in the meantime, please don't hesitate to contact us.</p>
+      <br/>
+      <p>Warm regards,<br/><strong>DOFA Pathways</strong><br/>Residential Services Team</p>
+    `;
+
+    MailApp.sendEmail(
+      applicantEmail,
+      'Your DOFA Pathways Intake Form Has Been Received',
+      `Dear ${participantName},\n\nThank you for completing the DOFA Pathways intake form. We have successfully received your submission and will be in touch shortly.\n\nWarm regards,\nDOFA Pathways Residential Services Team`,
+      {
+        name:     'DOFA Pathways',
+        htmlBody: applicantHtml,
+      }
+    );
+  }
+
+  // ── "Send me a copy" opt-in email ────────────────────────────────────────
+  const sendCopy = getDeep(data, 'meta.sendCopyToEmail');
+  const copyEmail = (getDeep(data, 'meta.copyEmail') || '').trim();
+  if (sendCopy === true && copyEmail && copyEmail.indexOf('@') > 0) {
+    const copyHtml = `
+      <p>Dear <strong>${participantName}</strong>,</p>
+      <p>As requested, please find attached a PDF copy of your completed DOFA Pathways intake form.</p>
+      <p>Please keep this for your records. If you have any questions, feel free to contact our team.</p>
+      <br/>
+      <p>Warm regards,<br/><strong>DOFA Pathways</strong><br/>Residential Services Team</p>
+    `;
+    MailApp.sendEmail(
+      copyEmail,
+      'Your Copy — DOFA Pathways Completed Intake Form',
+      `Dear ${participantName},\n\nAs requested, please find attached a copy of your completed DOFA Pathways intake form.\n\nWarm regards,\nDOFA Pathways Residential Services Team`,
+      {
+        name:        'DOFA Pathways',
+        htmlBody:    copyHtml,
+        attachments: [mainPdfFile.getBlob()],
+      }
+    );
+    Logger.log('Copy email sent to: ' + copyEmail);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -621,6 +704,64 @@ function getDeep(data, path) {
     (val, key) => (val && val[key] !== undefined ? val[key] : ''),
     data || {}
   );
+}
+
+function setDeep(obj, path, value) {
+  const keys = path.split('.');
+  const lastKey = keys.pop();
+  const target = keys.reduce((o, k) => {
+    if (!o[k]) o[k] = {};
+    return o[k];
+  }, obj);
+  if (target) {
+    target[lastKey] = value;
+  }
+}
+
+function replacePlaceholderWithImage(body, placeholder, base64ImageString) {
+  const tag = '{{' + placeholder + '}}';
+  const escapedTag = tag.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  
+  let rangeElement;
+  while ((rangeElement = body.findText(escapedTag)) !== null) {
+    const textElement = rangeElement.getElement().asText();
+    const startOffset = rangeElement.getStartOffset();
+    const endOffset = rangeElement.getEndOffsetInclusive();
+
+    const parent = textElement.getParent();
+    if (parent.getType() === DocumentApp.ElementType.PARAGRAPH) {
+      try {
+        const parts = base64ImageString.split(';base64,');
+        const contentType = parts[0].split(':')[1];
+        const base64Data = parts[1];
+        const decodedBytes = Utilities.base64Decode(base64Data);
+        const blob = Utilities.newBlob(decodedBytes, contentType, 'signature.png');
+
+        const paragraph = parent.asParagraph();
+        const childIndex = paragraph.getChildIndex(textElement);
+        const inlineImage = paragraph.insertInlineImage(childIndex, blob);
+        
+        if (inlineImage) {
+          const originalWidth = inlineImage.getWidth();
+          const originalHeight = inlineImage.getHeight();
+          const targetWidth = 150;
+          const targetHeight = Math.round((originalHeight / originalWidth) * targetWidth);
+          inlineImage.setWidth(targetWidth);
+          inlineImage.setHeight(targetHeight);
+        }
+
+        if (textElement.getText().length === (endOffset - startOffset + 1)) {
+          textElement.removeFromParent();
+        } else {
+          textElement.deleteText(startOffset, endOffset);
+        }
+      } catch (err) {
+        Logger.log('Error replacing placeholder with image: ' + err);
+        // Fall back to deleting tag text if rendering fails
+        textElement.deleteText(startOffset, endOffset);
+      }
+    }
+  }
 }
 
 function formatValue(value) {
