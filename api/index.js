@@ -4,7 +4,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import PDFDocument from 'pdfkit';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, AlignmentType } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, AlignmentType, ImageRun } from 'docx';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,10 +17,9 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 app.use(cors());
 app.use(express.json({ limit: '8mb' }));
 
-// Serve static files from the React build in production
-// In development, Vite will handle serving the frontend, but the API routes still work
-if (NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'dist')));
+// Serve static files from the React build in production (only when running locally)
+if (NODE_ENV === 'production' && !process.env.VERCEL) {
+  app.use(express.static(path.join(__dirname, '..', 'dist')));
 }
 
 const sections = [
@@ -150,6 +149,35 @@ function makeCell(text, bold = false) {
   });
 }
 
+function makeCellForValue(value, bold = false) {
+  const isImg = typeof value === 'string' && value.startsWith('data:image/');
+  if (isImg) {
+    try {
+      const base64Data = value.split(';base64,').pop();
+      const imgBuffer = Buffer.from(base64Data, 'base64');
+      const image = new ImageRun({
+        data: imgBuffer,
+        transformation: {
+          width: 150,
+          height: 40,
+        },
+        type: 'png'
+      });
+      return new TableCell({
+        width: { size: 50, type: WidthType.PERCENTAGE },
+        children: [new Paragraph({ children: [image] })]
+      });
+    } catch (e) {
+      console.error('Error drawing DOCX image:', e);
+      return new TableCell({
+        width: { size: 50, type: WidthType.PERCENTAGE },
+        children: [new Paragraph({ children: [new TextRun({ text: '[Failed to render signature image]', bold: false, color: 'FF0000' })] })]
+      });
+    }
+  }
+  return makeCell(value, bold);
+}
+
 async function renderDocx(data, res) {
   const children = [
     new Paragraph({ text: 'DOFA PATHWAYS', heading: HeadingLevel.TITLE, alignment: AlignmentType.CENTER }),
@@ -164,7 +192,7 @@ async function renderDocx(data, res) {
     if (!content || Object.keys(content).length === 0) continue;
     children.push(new Paragraph({ text: section.title, heading: HeadingLevel.HEADING_2 }));
     const rows = flattenEntries(content).map(item => new TableRow({
-      children: [makeCell(item.label, true), makeCell(item.value)]
+      children: [makeCell(item.label, true), makeCellForValue(item.value)]
     }));
     children.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows }));
     children.push(new Paragraph({ text: '' }));
@@ -181,8 +209,8 @@ async function renderDocx(data, res) {
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', environment: NODE_ENV });
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', environment: NODE_ENV, vercel: !!process.env.VERCEL });
 });
 
 // API routes
@@ -227,14 +255,19 @@ app.post('/api/submit/google', async (req, res) => {
   }
 });
 
-// Serve the React app for all other routes in production
-if (NODE_ENV === 'production') {
+// Serve the React app for all other routes in production (only when running locally)
+if (NODE_ENV === 'production' && !process.env.VERCEL) {
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`DOFA Intake Form API running at http://localhost:${PORT}`);
-  console.log(`Environment: ${NODE_ENV}`);
-});
+// Start listener only when NOT running on serverless Vercel environment
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`DOFA Intake Form API running at http://localhost:${PORT}`);
+    console.log(`Environment: ${NODE_ENV}`);
+  });
+}
+
+export default app;

@@ -6,8 +6,8 @@
 const CONFIG = {
   driveFolderId:        '10TLoTQO6Qd1ifKNlgSnWiU-m7JUluSKR',  // Root output folder
   sheetName:            'DOFA Intake Entries',
-  templateDocId:        '1e-t-4HYnEECYgqd5Vng4xTKCy_ats9k-qAW3HXrCzTc', // Main intake template
-  roiTemplateDocId:     'YOUR_ROI_FORM3_TEMPLATE_DOC_ID',                  // ← paste Form 3 template ID here
+  templateDocId:        '1eS5ocMoxAHIfzhcLwAO9EEptR1kOw99nSbZnbxR_A2Q', // Main intake template
+  roiTemplateDocId:     '1HXGQXNkxKtRQlwjkmHvOhX20Uvt6obzw8eRIABNgCro',                  // ← paste Form 3 template ID here
   emailRecipients:      'chideraigboka7@gmail.com',
   emailPdfAsAttachment: true,
 };
@@ -227,31 +227,17 @@ function saveSubmission(data) {
   const participantFolder = getOrCreateSubfolder(rootFolder, participantName);
 
   // ── Process Base64 Signature Images ──────────────────────────────────────
-  const signatures = {};
-  const signatureFields = [
-    'consent.participantSignature',
-    'consent.staffWitnessSignature',
-    'roi.signature',
-    'roi.staffSignature',
-    'rights.signature'
-  ];
+  const signatures = collectBase64SignatureImages(data);
 
-  signatureFields.forEach((fieldPath) => {
-    const val = getDeep(data, fieldPath);
-    if (typeof val === 'string' && val.indexOf('data:image/') === 0) {
-      try {
-        signatures[fieldPath] = val;
-        const parts = val.split(';base64,');
-        const contentType = parts[0].split(':')[1];
-        const base64Data = parts[1];
-        const decodedBytes = Utilities.base64Decode(base64Data);
-        const blob = Utilities.newBlob(decodedBytes, contentType, `${participantName}_${fieldPath.replace('.', '_')}.png`);
-        const file = participantFolder.createFile(blob);
-        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-        setDeep(data, fieldPath, file.getUrl());
-      } catch (err) {
-        Logger.log('Failed to save signature image for ' + fieldPath + ': ' + err);
-      }
+  Object.keys(signatures).filter((fieldPath) => isBase64ImageString(getDeep(data, fieldPath))).forEach((fieldPath) => {
+    try {
+      const fileName = `${participantName}_${fieldPath.replace(/\./g, '_')}.png`;
+      const blob = convertBase64ToImageBlob(signatures[fieldPath], fileName);
+      const file = participantFolder.createFile(blob);
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      setDeep(data, fieldPath, file.getUrl());
+    } catch (err) {
+      Logger.log('Failed to save signature image for ' + fieldPath + ': ' + err);
     }
   });
 
@@ -366,15 +352,72 @@ function createRoiPdf(data, entryId, participantName, destinationFolder, signatu
 // -----------------------------------------------------------------------------
 function applyReplacements(body, replacements, signatures) {
   signatures = signatures || {};
-  Object.keys(replacements).forEach((placeholder) => {
+
+  const replaceOne = (placeholderKey, actualValue, isImageSig) => {
     try {
-      if (signatures[placeholder]) {
-        replacePlaceholderWithImage(body, placeholder, signatures[placeholder]);
+      const escaped = placeholderKey.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+      const pattern = '\\{\\{\\s*' + escaped + '\\s*\\}\\}';
+      const renderAsImage = isImageSig || isBase64ImageString(actualValue);
+      
+      if (renderAsImage) {
+        // Use a temporary unique single-run token. This solves the issue of Google Docs
+        // splitting the placeholder text run into multiple pieces, which makes findText fail.
+        // replaceText is native and handles split text elements beautifully.
+        const tempToken = '__TEMP_SIG_' + placeholderKey.replace(/\./g, '_') + '__';
+        body.replaceText(pattern, tempToken);
+        replacePlaceholderWithImage(body, tempToken, actualValue);
       } else {
-        body.replaceText(`\\{\\{${placeholder}\\}\\}`, replacements[placeholder]);
+        body.replaceText(pattern, actualValue);
       }
     } catch (e) {
-      Logger.log(`Failed to replace {{${placeholder}}}: ${e.message}`);
+      Logger.log(`Failed to replace ${placeholderKey}: ${e.message}`);
+    }
+  };
+
+  Object.keys(replacements).forEach((placeholder) => {
+    const value = replacements[placeholder];
+    const isImageSig = !!signatures[placeholder];
+    const sigValue = signatures[placeholder];
+
+    // Replace primary placeholder
+    replaceOne(placeholder, isImageSig ? sigValue : value, isImageSig);
+
+    // Support flexible fallback aliases for signature fields
+    if (placeholder.endsWith('.signature')) {
+      const fallback = placeholder.replace(/\.signature$/, '.participantSignature');
+      replaceOne(fallback, isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder.endsWith('.participantSignature')) {
+      const fallback = placeholder.replace(/\.participantSignature$/, '.signature');
+      replaceOne(fallback, isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder.endsWith('.staffWitnessSignature')) {
+      const fallback = placeholder.replace(/\.staffWitnessSignature$/, '.staffSignature');
+      replaceOne(fallback, isImageSig ? sigValue : value, isImageSig);
+      const fallbackWitness = placeholder.replace(/\.staffWitnessSignature$/, '.witnessSignature');
+      replaceOne(fallbackWitness, isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder.endsWith('.staffSignature')) {
+      const fallback = placeholder.replace(/\.staffSignature$/, '.staffWitnessSignature');
+      replaceOne(fallback, isImageSig ? sigValue : value, isImageSig);
+    }
+
+    // Support generic signature.* placeholders in the main Google Doc template
+    if (placeholder === 'consent.participantSignature') {
+      replaceOne('signature.participantSignature', isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder === 'consent.staffWitnessSignature') {
+      replaceOne('signature.staffSignature', isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder === 'consent.printedName') {
+      replaceOne('signature.participantFullName', isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder === 'consent.signatureDate') {
+      replaceOne('signature.participantDate', isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder === 'consent.ParticipantNum') {
+      replaceOne('signature.participantPhone', isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder === 'consent.ParticipantAdress') {
+      replaceOne('signature.participantAddress', isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder === 'consent.staffWitnessName') {
+      replaceOne('signature.staffFullName', isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder === 'consent.staffWitnessTitle') {
+      replaceOne('signature.staffTitle', isImageSig ? sigValue : value, isImageSig);
+    } else if (placeholder === 'consent.staffWitnessDate') {
+      replaceOne('signature.staffDate', isImageSig ? sigValue : value, isImageSig);
     }
   });
 }
@@ -513,7 +556,18 @@ function createSummaryPdf(data, entryId, participantName, destinationFolder) {
       } else if (field.type === 'boolean') {
         body.appendParagraph(`${field.label}: ${value === true ? 'Yes' : 'No'}`);
       } else {
-        body.appendParagraph(`${field.label}: ${formatValue(value)}`);
+        const isImg = typeof value === 'string' && (value.indexOf('data:image/') === 0 || value.includes(';base64,'));
+        if (isImg) {
+          try {
+            const p = body.appendParagraph(`${field.label}: `);
+            const blob = convertBase64ToImageBlob(value, 'signature.png');
+            p.appendInlineImage(blob).setWidth(150).setHeight(40);
+          } catch (e) {
+            body.appendParagraph(`${field.label}: [Failed to render signature image]`);
+          }
+        } else {
+          body.appendParagraph(`${field.label}: ${formatValue(value)}`);
+        }
       }
     });
     body.appendParagraph('');
@@ -604,80 +658,94 @@ function sendNotification(data, participantName, mainPdfFile, roiPdfFile) {
 
   // ── Admin notification ────────────────────────────────────────────────────
   if (adminRecipients) {
-    const adminHtml = `
-      <p>A new DOFA intake submission was received for <strong>${participantName}</strong>.</p>
-      <p>
-        <strong>Main Intake PDF:</strong>
-        <a href="${mainPdfFile.getUrl()}">${mainPdfFile.getName()}</a>
-      </p>
-      <p>
-        <strong>Form 3 ROI PDF:</strong>
-        <a href="${roiPdfFile.getUrl()}">${roiPdfFile.getName()}</a>
-      </p>
-    `;
+    try {
+      const adminHtml = `
+        <p>A new DOFA intake submission was received for <strong>${participantName}</strong>.</p>
+        <p>
+          <strong>Main Intake PDF:</strong>
+          <a href="${mainPdfFile.getUrl()}">${mainPdfFile.getName()}</a>
+        </p>
+        <p>
+          <strong>Form 3 ROI PDF:</strong>
+          <a href="${roiPdfFile.getUrl()}">${roiPdfFile.getName()}</a>
+        </p>
+      `;
 
-    const adminOptions = {
-      name:     'DOFA Pathways Intake',
-      htmlBody: adminHtml,
-    };
+      const adminOptions = {
+        name:     'DOFA Pathways Intake',
+        htmlBody: adminHtml,
+      };
 
-    if (CONFIG.emailPdfAsAttachment) {
-      adminOptions.attachments = [mainPdfFile.getBlob(), roiPdfFile.getBlob()];
+      if (CONFIG.emailPdfAsAttachment) {
+        adminOptions.attachments = [mainPdfFile.getBlob(), roiPdfFile.getBlob()];
+      }
+
+      MailApp.sendEmail(
+        adminRecipients,
+        `DOFA Intake Submission — ${participantName}`,
+        `Main PDF: ${mainPdfFile.getUrl()}\nROI PDF: ${roiPdfFile.getUrl()}`,
+        adminOptions
+      );
+      Logger.log('Admin notification email sent successfully.');
+    } catch (e) {
+      Logger.log('Failed to send admin notification email: ' + e);
     }
-
-    MailApp.sendEmail(
-      adminRecipients,
-      `DOFA Intake Submission — ${participantName}`,
-      `Main PDF: ${mainPdfFile.getUrl()}\nROI PDF: ${roiPdfFile.getUrl()}`,
-      adminOptions
-    );
   }
 
   // ── Applicant confirmation email ──────────────────────────────────────────
   const applicantEmail = getDeep(data, 'participant.email') || '';
   if (applicantEmail && applicantEmail.indexOf('@') > 0) {
-    const applicantHtml = `
-      <p>Dear <strong>${participantName}</strong>,</p>
-      <p>Thank you for completing the DOFA Pathways Residential Services intake form. We have successfully received your submission.</p>
-      <p>Our team will review your information and reach out to you shortly regarding next steps.</p>
-      <p>If you have any questions in the meantime, please don't hesitate to contact us.</p>
-      <br/>
-      <p>Warm regards,<br/><strong>DOFA Pathways</strong><br/>Residential Services Team</p>
-    `;
+    try {
+      const applicantHtml = `
+        <p>Dear <strong>${participantName}</strong>,</p>
+        <p>Thank you for completing the DOFA Pathways Residential Services intake form. We have successfully received your submission.</p>
+        <p>Our team will review your information and reach out to you shortly regarding next steps.</p>
+        <p>If you have any questions in the meantime, please don't hesitate to contact us.</p>
+        <br/>
+        <p>Warm regards,<br/><strong>DOFA Pathways</strong><br/>Residential Services Team</p>
+      `;
 
-    MailApp.sendEmail(
-      applicantEmail,
-      'Your DOFA Pathways Intake Form Has Been Received',
-      `Dear ${participantName},\n\nThank you for completing the DOFA Pathways intake form. We have successfully received your submission and will be in touch shortly.\n\nWarm regards,\nDOFA Pathways Residential Services Team`,
-      {
-        name:     'DOFA Pathways',
-        htmlBody: applicantHtml,
-      }
-    );
+      MailApp.sendEmail(
+        applicantEmail,
+        'Your DOFA Pathways Intake Form Has Been Received',
+        `Dear ${participantName},\n\nThank you for completing the DOFA Pathways intake form. We have successfully received your submission and will be in touch shortly.\n\nWarm regards,\nDOFA Pathways Residential Services Team`,
+        {
+          name:     'DOFA Pathways',
+          htmlBody: applicantHtml,
+        }
+      );
+      Logger.log('Applicant confirmation email sent successfully to: ' + applicantEmail);
+    } catch (e) {
+      Logger.log('Failed to send applicant confirmation email: ' + e);
+    }
   }
 
   // ── "Send me a copy" opt-in email ────────────────────────────────────────
   const sendCopy = getDeep(data, 'meta.sendCopyToEmail');
   const copyEmail = (getDeep(data, 'meta.copyEmail') || '').trim();
   if (sendCopy === true && copyEmail && copyEmail.indexOf('@') > 0) {
-    const copyHtml = `
-      <p>Dear <strong>${participantName}</strong>,</p>
-      <p>As requested, please find attached a PDF copy of your completed DOFA Pathways intake form.</p>
-      <p>Please keep this for your records. If you have any questions, feel free to contact our team.</p>
-      <br/>
-      <p>Warm regards,<br/><strong>DOFA Pathways</strong><br/>Residential Services Team</p>
-    `;
-    MailApp.sendEmail(
-      copyEmail,
-      'Your Copy — DOFA Pathways Completed Intake Form',
-      `Dear ${participantName},\n\nAs requested, please find attached a copy of your completed DOFA Pathways intake form.\n\nWarm regards,\nDOFA Pathways Residential Services Team`,
-      {
-        name:        'DOFA Pathways',
-        htmlBody:    copyHtml,
-        attachments: [mainPdfFile.getBlob()],
-      }
-    );
-    Logger.log('Copy email sent to: ' + copyEmail);
+    try {
+      const copyHtml = `
+        <p>Dear <strong>${participantName}</strong>,</p>
+        <p>As requested, please find attached a PDF copy of your completed DOFA Pathways intake form.</p>
+        <p>Please keep this for your records. If you have any questions, feel free to contact our team.</p>
+        <br/>
+        <p>Warm regards,<br/><strong>DOFA Pathways</strong><br/>Residential Services Team</p>
+      `;
+      MailApp.sendEmail(
+        copyEmail,
+        'Your Copy — DOFA Pathways Completed Intake Form',
+        `Dear ${participantName},\n\nAs requested, please find attached a copy of your completed DOFA Pathways intake form.\n\nWarm regards,\nDOFA Pathways Residential Services Team`,
+        {
+          name:        'DOFA Pathways',
+          htmlBody:    copyHtml,
+          attachments: [mainPdfFile.getBlob()],
+        }
+      );
+      Logger.log('Copy email sent to: ' + copyEmail);
+    } catch (e) {
+      Logger.log('Failed to send copy email to ' + copyEmail + ': ' + e);
+    }
   }
 }
 
@@ -706,6 +774,47 @@ function getDeep(data, path) {
   );
 }
 
+function isBase64ImageString(value) {
+  if (typeof value !== 'string') return false;
+  const trimmed = value.trim();
+  return trimmed.indexOf('data:image/') === 0 || /^image\/[a-zA-Z+.-]+;base64,/.test(trimmed) || trimmed.includes(';base64,');
+}
+
+function collectBase64SignatureImages(data) {
+  const signatures = {};
+
+  const walk = (value, prefix) => {
+    if (isBase64ImageString(value)) {
+      signatures[prefix] = value.trim();
+      return;
+    }
+
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return;
+
+    Object.keys(value).forEach((key) => {
+      const path = prefix ? `${prefix}.${key}` : key;
+      walk(value[key], path);
+    });
+  };
+
+  walk(data || {}, '');
+
+  const aliasPairs = [
+    ['consent.participantSignature', 'signature.participantSignature'],
+    ['consent.staffWitnessSignature', 'signature.staffSignature'],
+    ['roi.signature', 'roi.participantSignature'],
+    ['roi.staffSignature', 'roi.staffWitnessSignature'],
+    ['rights.signature', 'rights.participantSignature'],
+  ];
+
+  aliasPairs.forEach(([source, alias]) => {
+    if (signatures[source] && !signatures[alias]) signatures[alias] = signatures[source];
+    if (signatures[alias] && !signatures[source]) signatures[source] = signatures[alias];
+  });
+
+  return signatures;
+}
+
 function setDeep(obj, path, value) {
   const keys = path.split('.');
   const lastKey = keys.pop();
@@ -718,9 +827,8 @@ function setDeep(obj, path, value) {
   }
 }
 
-function replacePlaceholderWithImage(body, placeholder, base64ImageString) {
-  const tag = '{{' + placeholder + '}}';
-  const escapedTag = tag.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+function replacePlaceholderWithImage(body, tempToken, base64ImageString) {
+  const escapedTag = tempToken.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
   
   let rangeElement;
   while ((rangeElement = body.findText(escapedTag)) !== null) {
@@ -729,17 +837,12 @@ function replacePlaceholderWithImage(body, placeholder, base64ImageString) {
     const endOffset = rangeElement.getEndOffsetInclusive();
 
     const parent = textElement.getParent();
-    if (parent.getType() === DocumentApp.ElementType.PARAGRAPH) {
+    // Duck typing check for any container element (Paragraph, ListItem, etc.) that can contain inline images
+    if (parent && typeof parent.getChildIndex === 'function' && typeof parent.insertInlineImage === 'function') {
       try {
-        const parts = base64ImageString.split(';base64,');
-        const contentType = parts[0].split(':')[1];
-        const base64Data = parts[1];
-        const decodedBytes = Utilities.base64Decode(base64Data);
-        const blob = Utilities.newBlob(decodedBytes, contentType, 'signature.png');
-
-        const paragraph = parent.asParagraph();
-        const childIndex = paragraph.getChildIndex(textElement);
-        const inlineImage = paragraph.insertInlineImage(childIndex, blob);
+        const blob = convertBase64ToImageBlob(base64ImageString, 'signature.png');
+        const childIndex = parent.getChildIndex(textElement);
+        const inlineImage = parent.insertInlineImage(childIndex, blob);
         
         if (inlineImage) {
           const originalWidth = inlineImage.getWidth();
@@ -760,8 +863,32 @@ function replacePlaceholderWithImage(body, placeholder, base64ImageString) {
         // Fall back to deleting tag text if rendering fails
         textElement.deleteText(startOffset, endOffset);
       }
+    } else {
+      Logger.log('Could not insert signature image for token ' + tempToken + ': unsupported parent element');
+      textElement.deleteText(startOffset, endOffset);
     }
   }
+}
+
+function convertBase64ToImageBlob(base64String, defaultName) {
+  let base64 = base64String.trim();
+  let mimeType = 'image/png'; // default
+  
+  if (base64.includes(';base64,')) {
+    const matches = base64.match(/^data:(image\/[a-zA-Z+.-]+);base64,/);
+    if (matches && matches[1]) {
+      mimeType = matches[1];
+    }
+    base64 = base64.split(';base64,')[1];
+  } else if (base64.includes(',')) {
+    base64 = base64.split(',')[1];
+  }
+  
+  // Clean base64 string (remove whitespace and newlines)
+  base64 = base64.replace(/\s/g, '');
+  
+  const decoded = Utilities.base64Decode(base64);
+  return Utilities.newBlob(decoded, mimeType, defaultName || 'signature.png');
 }
 
 function formatValue(value) {

@@ -129,7 +129,7 @@ function App() {
         setModal({ isOpen: true, title: 'Submission Failed', message: result.error || 'Unable to submit to Google Sheets.', type: 'error' });
         return;
       }
-      setModal({ isOpen: true, title: 'Success!', message: 'Submitted successfully.', type: 'success', pdfUrl: result.pdfUrl });
+      setModal({ isOpen: true, title: 'Success!', message: 'Submitted successfully.', type: 'success', pdfUrl: result.mainPdfUrl });
     } catch {
       setModal({ isOpen: true, title: 'Error', message: 'Unable to submit right now. Please check the API server and Apps Script URL.', type: 'error' });
     } finally {

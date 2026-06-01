@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:api\"",
     "dev:frontend": "vite",
-    "dev:api": "node server.js",
+    "dev:api": "node api/index.js",
     "build": "vite build",
-    "start": "NODE_ENV=production node server.js",
+    "start": "NODE_ENV=production node api/index.js",
     "preview": "vite preview"
   },
   "dependencies": {
